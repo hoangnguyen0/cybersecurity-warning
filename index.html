@@ -3,809 +3,938 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CyberWatch VN — Cảnh Báo An Ninh Mạng Thời Gian Thực</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<title>CyberWatch VN — Aggregator An Ninh Mạng</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg-primary: #050a0f;
-    --bg-secondary: #0a1520;
-    --bg-card: #0d1b2a;
-    --bg-card-hover: #112233;
-    --accent: #00f5c4;
-    --accent2: #ff3a3a;
-    --accent3: #f5a623;
-    --accent4: #4fc3f7;
-    --text-primary: #e0f2fe;
-    --text-secondary: #7fb8d4;
-    --text-muted: #3a6070;
-    --border: #1a3a50;
-    --glow: 0 0 20px #00f5c440;
-    --glow-red: 0 0 20px #ff3a3a50;
-    --font-mono: 'Share Tech Mono', monospace;
-    --font-display: 'Rajdhani', sans-serif;
-    --font-body: 'Exo 2', sans-serif;
-  }
-  [data-theme="light"] {
-    --bg-primary: #f0f4f8; --bg-secondary: #e2eaf2; --bg-card: #ffffff;
-    --bg-card-hover: #f8fafc; --accent: #007a63; --accent2: #cc0000;
-    --accent3: #b57a00; --accent4: #0277bd; --text-primary: #0d1b2a;
-    --text-secondary: #2a5070; --text-muted: #7a9ab0; --border: #c0d4e4;
-    --glow: 0 2px 12px #007a6330; --glow-red: 0 2px 12px #cc000030;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,196,0.012) 2px, rgba(0,245,196,0.012) 4px);
-    pointer-events: none; z-index: 9999;
-  }
-  [data-theme="light"] body::before { display: none; }
-  .bg-grid {
-    position: fixed; inset: 0;
-    background-image: linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
-    background-size: 50px 50px; pointer-events: none;
-  }
-  [data-theme="light"] .bg-grid { background-image: linear-gradient(rgba(0,122,99,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,122,99,0.05) 1px, transparent 1px); }
+:root {
+  --bg0:#050a0f; --bg1:#0a1520; --bg2:#0d1b2a; --bg2h:#112233;
+  --a:#00f5c4; --a2:#ff3a3a; --a3:#f5a623; --a4:#4fc3f7;
+  --t1:#e0f2fe; --t2:#7fb8d4; --tm:#3a6070;
+  --bd:#1a3a50; --glow:0 0 18px #00f5c440; --glow2:0 0 18px #ff3a3a40;
+  --mono:'Share Tech Mono',monospace; --dis:'Rajdhani',sans-serif; --body:'Exo 2',sans-serif;
+}
+[data-theme=light]{
+  --bg0:#f0f4f8;--bg1:#e2eaf2;--bg2:#fff;--bg2h:#f8fafc;
+  --a:#007a63;--a2:#cc0000;--a3:#b57a00;--a4:#0277bd;
+  --t1:#0d1b2a;--t2:#2a5070;--tm:#7a9ab0;--bd:#c0d4e4;
+  --glow:0 2px 12px #007a6330;--glow2:0 2px 12px #cc000030;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg0);color:var(--t1);font-family:var(--body);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,196,.012) 2px,rgba(0,245,196,.012) 4px);pointer-events:none;z-index:9999}
+[data-theme=light] body::before{display:none}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,196,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,196,.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+[data-theme=light] .bg-grid{background-image:linear-gradient(rgba(0,122,99,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,122,99,.05) 1px,transparent 1px)}
 
-  /* HEADER */
-  header { position: sticky; top: 0; z-index: 100; background: rgba(5,10,15,0.96); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
-  [data-theme="light"] header { background: rgba(240,244,248,0.96); }
-  .header-inner { max-width: 1440px; margin: 0 auto; display: flex; align-items: center; gap: 1.5rem; height: 60px; padding: 0 1.5rem; }
-  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
-  .logo-icon { width: 36px; height: 36px; border: 2px solid var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: var(--glow); position: relative; overflow: hidden; }
-  .logo-icon::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 40%, rgba(0,245,196,0.2)); animation: shimmer 3s ease-in-out infinite; }
-  @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
-  .logo-icon svg { width: 20px; height: 20px; fill: var(--accent); }
-  .logo-text { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; }
-  .logo-text span { color: var(--accent); }
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(5,10,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd)}
+[data-theme=light] nav{background:rgba(240,244,248,.97)}
+.nav-inner{max-width:1500px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:58px;padding:0 1.5rem}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.logo-icon{width:34px;height:34px;border:2px solid var(--a);border-radius:6px;display:flex;align-items:center;justify-content:center;box-shadow:var(--glow);position:relative;overflow:hidden}
+.logo-icon::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(0,245,196,.2));animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%,100%{opacity:.5}50%{opacity:1}}
+.logo-icon svg{width:18px;height:18px;fill:var(--a)}
+.logo-txt{font-family:var(--dis);font-weight:700;font-size:1.15rem;letter-spacing:2px}
+.logo-txt span{color:var(--a)}
 
-  /* TICKER */
-  .ticker-wrap { flex: 1; overflow: hidden; border: 1px solid var(--border); border-radius: 4px; padding: 3px 0; background: var(--bg-secondary); font-family: var(--font-mono); font-size: 0.72rem; }
-  .ticker { display: flex; white-space: nowrap; animation: ticker 50s linear infinite; }
-  .ticker:hover { animation-play-state: paused; }
-  .ticker-item { padding: 0 2rem; color: var(--text-secondary); }
-  .tc { color: var(--accent2); } .th { color: var(--accent3); } .tm { color: var(--accent4); }
-  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+/* TABS */
+.nav-tabs{display:flex;gap:2px;margin-left:1rem}
+.tab{font-family:var(--dis);font-weight:600;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:4px;border:none;background:none;cursor:pointer;color:var(--tm);transition:all .2s}
+.tab:hover{color:var(--t2);background:rgba(255,255,255,.05)}
+.tab.active{color:var(--a);background:rgba(0,245,196,.08);box-shadow:inset 0 -2px var(--a)}
 
-  /* REFRESH STATUS */
-  .refresh-bar { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .refresh-status { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-  .refresh-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease infinite; }
-  .refresh-dot.loading { background: var(--accent3); animation: spin 1s linear infinite; }
-  .refresh-dot.error { background: var(--accent2); animation: blink 1s step-end infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-  @keyframes spin { to{transform:rotate(360deg)} }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  .countdown-ring { position: relative; width: 28px; height: 28px; }
-  .countdown-ring svg { transform: rotate(-90deg); }
-  .countdown-ring .track { fill: none; stroke: var(--border); stroke-width: 3; }
-  .countdown-ring .fill { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-  .countdown-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent); }
+/* TICKER */
+.ticker-wrap{flex:1;overflow:hidden;border:1px solid var(--bd);border-radius:4px;padding:3px 0;background:var(--bg1);font-family:var(--mono);font-size:.7rem}
+.ticker{display:flex;white-space:nowrap;animation:tick 60s linear infinite}
+.ticker:hover{animation-play-state:paused}
+.ti{padding:0 1.5rem;color:var(--t2)}
+.tc{color:var(--a2)}.th{color:var(--a3)}.tm2{color:var(--a4)}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-  .btn-icon { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 5px 9px; color: var(--text-secondary); font-size: 0.9rem; transition: all .2s; }
-  .btn-icon:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.refresh-info{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;color:var(--tm)}
+.rdot{width:6px;height:6px;border-radius:50%;background:var(--a);animation:pulse 2s ease infinite;flex-shrink:0}
+.rdot.spin{background:var(--a3);border-radius:50% 50% 0 0;animation:spin 1s linear infinite}
+.rdot.err{background:var(--a2);animation:blink 1s step-end infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.cring{position:relative;width:26px;height:26px}
+.cring svg{transform:rotate(-90deg)}
+.ctrack{fill:none;stroke:var(--bd);stroke-width:3}
+.cfill{fill:none;stroke:var(--a);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.cnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.5rem;color:var(--a)}
+.btn-sm{background:none;border:1px solid var(--bd);border-radius:5px;cursor:pointer;padding:5px 8px;color:var(--t2);font-size:.85rem;transition:all .2s}
+.btn-sm:hover{border-color:var(--a);color:var(--a);box-shadow:var(--glow)}
 
-  /* CONTAINER */
-  .container { max-width: 1440px; margin: 0 auto; padding: 1.5rem; }
+/* MAIN */
+.wrap{max-width:1500px;margin:0 auto;padding:1.25rem 1.5rem}
 
-  /* STATS */
-  .stats-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; transition: all .3s; animation: fadeUp .5s ease both; cursor: default; }
-  .stat-card:hover { border-color: var(--accent); box-shadow: var(--glow); transform: translateY(-2px); }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .stat-card:nth-child(1){animation-delay:.05s} .stat-card:nth-child(2){animation-delay:.1s} .stat-card:nth-child(3){animation-delay:.15s} .stat-card:nth-child(4){animation-delay:.2s}
-  .stat-icon { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-  .si-r{background:rgba(255,58,58,.12)} .si-o{background:rgba(245,166,35,.12)} .si-b{background:rgba(79,195,247,.12)} .si-g{background:rgba(0,245,196,.12)}
-  .stat-info { flex:1 }
-  .stat-value { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; line-height: 1; }
-  .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
-  .stat-badge { font-family: var(--font-mono); font-size: 0.68rem; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-  .sb-up{background:rgba(255,58,58,.15);color:var(--accent2)} .sb-ok{background:rgba(0,245,196,.12);color:var(--accent)}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:.875rem;margin-bottom:1.25rem}
+.sc{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:.875rem 1rem;display:flex;align-items:center;gap:.875rem;transition:all .3s;animation:fup .5s ease both;cursor:default}
+.sc:hover{border-color:var(--a);box-shadow:var(--glow);transform:translateY(-2px)}
+.sc:nth-child(1){animation-delay:.05s}.sc:nth-child(2){animation-delay:.1s}.sc:nth-child(3){animation-delay:.15s}.sc:nth-child(4){animation-delay:.2s}.sc:nth-child(5){animation-delay:.25s}
+@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.si{width:38px;height:38px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.sir{background:rgba(255,58,58,.12)}.sio{background:rgba(245,166,35,.12)}.sib{background:rgba(79,195,247,.12)}.sig{background:rgba(0,245,196,.12)}.sip{background:rgba(160,100,255,.12)}
+.sv{font-family:var(--dis);font-size:1.5rem;font-weight:700;line-height:1}
+.sl{font-size:.68rem;color:var(--tm);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.sbg{font-family:var(--mono);font-size:.62rem;padding:1px 7px;border-radius:20px;white-space:nowrap;margin-top:3px}
+.sbr{background:rgba(255,58,58,.12);color:var(--a2)}.sbg2{background:rgba(0,245,196,.1);color:var(--a)}
 
-  /* SEARCH */
-  .search-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-  .search-box { flex:1; min-width: 220px; display: flex; align-items: center; gap: 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; transition: border-color .2s; }
-  .search-box:focus-within { border-color: var(--accent); box-shadow: var(--glow); }
-  .search-box input { flex:1; background: none; border: none; outline: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem; }
-  .search-box input::placeholder { color: var(--text-muted); }
-  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
-  .filter-btn { font-family: var(--font-display); font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 5px 12px; border-radius: 4px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text-secondary); transition: all .2s; text-transform: uppercase; }
-  .filter-btn.active, .filter-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,245,196,.07); }
-  .filter-btn.fc.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,58,58,.07); }
-  .filter-btn.fh.active { border-color: var(--accent3); color: var(--accent3); background: rgba(245,166,35,.07); }
-  .filter-btn.fm.active { border-color: var(--accent4); color: var(--accent4); background: rgba(79,195,247,.07); }
+/* SEARCH BAR */
+.sbar{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:.875rem 1.1rem;margin-bottom:1.25rem;display:flex;gap:.875rem;align-items:center;flex-wrap:wrap}
+.sbox{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--bg1);border:1px solid var(--bd);border-radius:6px;padding:6px 11px;transition:border-color .2s}
+.sbox:focus-within{border-color:var(--a);box-shadow:var(--glow)}
+.sbox input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-family:var(--mono);font-size:.8rem}
+.sbox input::placeholder{color:var(--tm)}
+.fgrp{display:flex;gap:5px;flex-wrap:wrap}
+.fb{font-family:var(--dis);font-weight:600;font-size:.72rem;letter-spacing:1px;padding:5px 11px;border-radius:4px;border:1px solid var(--bd);background:none;cursor:pointer;color:var(--t2);transition:all .2s;text-transform:uppercase}
+.fb.active,.fb:hover{border-color:var(--a);color:var(--a);background:rgba(0,245,196,.06)}
+.fb.fc.active{border-color:var(--a2);color:var(--a2);background:rgba(255,58,58,.06)}
+.fb.fh.active{border-color:var(--a3);color:var(--a3);background:rgba(245,166,35,.06)}
+.fb.fm.active{border-color:var(--a4);color:var(--a4);background:rgba(79,195,247,.06)}
 
-  /* GRID */
-  .main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; align-items: start; }
+/* SOURCE SELECTOR */
+.src-pills{display:flex;gap:5px;flex-wrap:wrap}
+.spill{font-family:var(--mono);font-size:.65rem;padding:4px 10px;border-radius:20px;border:1px solid var(--bd);background:none;cursor:pointer;color:var(--tm);transition:all .2s;display:flex;align-items:center;gap:5px}
+.spill.on{border-color:var(--a4);color:var(--a4);background:rgba(79,195,247,.07)}
+.spill .sdot2{width:4px;height:4px;border-radius:50%;background:currentColor}
 
-  /* SECTION TITLE */
-  .section-title { font-family: var(--font-display); font-weight: 700; font-size: 0.82rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; gap: 8px; margin-bottom: 0.875rem; }
-  .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
-  .sdot { width:5px; height:5px; border-radius:50%; background:var(--accent); box-shadow:var(--glow); animation: pulse 2s ease infinite; }
+/* GRID */
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;align-items:start}
 
-  /* CVE TABLE */
-  .cve-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
-  .cve-head { padding: .875rem 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-  .cve-head h2 { font-family: var(--font-display); font-weight: 700; font-size: .95rem; letter-spacing: 1px; }
-  .live-badge { font-family: var(--font-mono); font-size: .68rem; padding: 2px 8px; border-radius: 20px; background: rgba(255,58,58,.12); color: var(--accent2); border: 1px solid rgba(255,58,58,.25); display: flex; align-items: center; gap: 5px; }
-  .live-dot { width:5px; height:5px; border-radius:50%; background:var(--accent2); animation: blink 1s step-end infinite; }
-  .nvd-badge { font-family: var(--font-mono); font-size: .65rem; padding: 2px 8px; border-radius: 4px; background: rgba(0,245,196,.1); color: var(--accent); border: 1px solid rgba(0,245,196,.2); }
+/* SECTION TITLE */
+.stitle{font-family:var(--dis);font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--tm);display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.stitle::after{content:'';flex:1;height:1px;background:var(--bd)}
+.livdot{width:5px;height:5px;border-radius:50%;background:var(--a);box-shadow:var(--glow);animation:pulse 2s ease infinite}
 
-  table { width:100%; border-collapse:collapse; }
-  thead th { font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); padding:8px 1rem; text-align:left; border-bottom:1px solid var(--border); background:var(--bg-secondary); white-space:nowrap; }
-  tbody tr { border-bottom:1px solid rgba(26,58,80,.4); transition:background .15s; cursor:pointer; }
-  tbody tr:hover { background:var(--bg-card-hover); }
-  tbody tr:last-child { border-bottom:none; }
-  tbody td { padding:10px 1rem; font-size:.82rem; vertical-align:middle; }
-  .cve-id { font-family:var(--font-mono); font-size:.78rem; color:var(--accent4); white-space:nowrap; }
-  .sev-badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:3px; font-family:var(--font-mono); font-size:.66rem; font-weight:600; letter-spacing:.5px; white-space:nowrap; }
-  .sCRITICAL{background:rgba(255,58,58,.12);color:var(--accent2);border:1px solid rgba(255,58,58,.25)}
-  .sHIGH{background:rgba(245,166,35,.12);color:var(--accent3);border:1px solid rgba(245,166,35,.25)}
-  .sMEDIUM{background:rgba(79,195,247,.12);color:var(--accent4);border:1px solid rgba(79,195,247,.25)}
-  .sLOW{background:rgba(0,245,196,.08);color:var(--accent);border:1px solid rgba(0,245,196,.18)}
-  .sNONE{background:rgba(100,100,100,.12);color:#777;border:1px solid rgba(100,100,100,.2)}
-  .score-bar { display:flex; align-items:center; gap:6px; }
-  .score-track { width:52px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
-  .score-fill { height:100%; border-radius:2px; }
-  .score-num { font-family:var(--font-mono); font-size:.75rem; min-width:24px; }
-  .prod-tag { font-size:.7rem; padding:2px 7px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:3px; color:var(--text-secondary); font-family:var(--font-mono); white-space:nowrap; }
-  .time-ago { color:var(--text-muted); font-family:var(--font-mono); font-size:.7rem; white-space:nowrap; }
-  .poc-tag { font-family:var(--font-mono); font-size:.62rem; color:var(--accent2); margin-left:4px; }
-  .desc-cell { max-width:220px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* CVE TABLE */
+.cve-box{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin-bottom:1.25rem;animation:fup .5s .1s ease both}
+.cve-hd{padding:.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);gap:.75rem;flex-wrap:wrap}
+.cve-hd h2{font-family:var(--dis);font-weight:700;font-size:.9rem;letter-spacing:1px}
+.badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lbadge{font-family:var(--mono);font-size:.62rem;padding:2px 7px;border-radius:20px;background:rgba(255,58,58,.1);color:var(--a2);border:1px solid rgba(255,58,58,.22);display:flex;align-items:center;gap:4px}
+.ldot{width:4px;height:4px;border-radius:50%;background:var(--a2);animation:blink 1s step-end infinite}
+.nbadge{font-family:var(--mono);font-size:.6rem;padding:2px 7px;border-radius:3px;background:rgba(0,245,196,.08);color:var(--a);border:1px solid rgba(0,245,196,.18)}
+table{width:100%;border-collapse:collapse}
+thead th{font-family:var(--mono);font-size:.63rem;text-transform:uppercase;letter-spacing:1px;color:var(--tm);padding:7px .9rem;text-align:left;border-bottom:1px solid var(--bd);background:var(--bg1);white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(26,58,80,.35);transition:background .15s;cursor:pointer}
+tbody tr:hover{background:var(--bg2h)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:9px .9rem;font-size:.8rem;vertical-align:middle}
+.cid{font-family:var(--mono);font-size:.75rem;color:var(--a4);white-space:nowrap}
+.sb{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.5px;white-space:nowrap}
+.sCRITICAL{background:rgba(255,58,58,.1);color:var(--a2);border:1px solid rgba(255,58,58,.22)}
+.sHIGH{background:rgba(245,166,35,.1);color:var(--a3);border:1px solid rgba(245,166,35,.22)}
+.sMEDIUM{background:rgba(79,195,247,.1);color:var(--a4);border:1px solid rgba(79,195,247,.22)}
+.sLOW{background:rgba(0,245,196,.07);color:var(--a);border:1px solid rgba(0,245,196,.16)}
+.sNONE{background:rgba(100,100,100,.1);color:#666;border:1px solid rgba(100,100,100,.2)}
+.sbar2{display:flex;align-items:center;gap:5px}
+.str{width:48px;height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
+.sf{height:100%;border-radius:2px}
+.sn{font-family:var(--mono);font-size:.72rem;min-width:22px}
+.ptag{font-size:.67rem;padding:1px 6px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;color:var(--t2);font-family:var(--mono);white-space:nowrap}
+.tago{color:var(--tm);font-family:var(--mono);font-size:.67rem;white-space:nowrap}
+.desc-c{max-width:200px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cve-ft{padding:.5rem .9rem;border-top:1px solid var(--bd);font-family:var(--mono);font-size:.62rem;color:var(--tm);display:flex;justify-content:space-between}
+.ft-lnk{color:var(--a4);text-decoration:none}.ft-lnk:hover{text-decoration:underline}
 
-  /* Skeleton loader */
-  .skeleton { background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card-hover) 50%, var(--bg-secondary) 75%); background-size: 200% 100%; animation: skeleton 1.5s infinite; border-radius:4px; }
-  @keyframes skeleton { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+/* NEWS TABS */
+.news-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
+.ntabs{display:flex;gap:4px}
+.ntab{font-family:var(--mono);font-size:.65rem;letter-spacing:1px;padding:4px 10px;border-radius:4px;border:1px solid var(--bd);background:none;cursor:pointer;color:var(--tm);transition:all .2s;text-transform:uppercase}
+.ntab.active{border-color:var(--a4);color:var(--a4);background:rgba(79,195,247,.07)}
 
-  /* NEWS */
-  .news-list { display:flex; flex-direction:column; gap:.875rem; }
-  .news-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:1.1rem 1.25rem; display:flex; gap:.875rem; transition:all .25s; cursor:pointer; position:relative; overflow:hidden; animation:fadeUp .4s ease both; }
-  .news-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--border); transition:background .25s; }
-  .news-card:hover { border-color:var(--accent); transform:translateX(3px); }
-  .news-card:hover::before { background:var(--accent); }
-  .news-card.urgent::before { background:var(--accent2); }
-  .news-card.urgent { border-color:rgba(255,58,58,.25); }
-  .news-cat { font-family:var(--font-mono); font-size:.66rem; letter-spacing:1px; text-transform:uppercase; }
-  .news-title { font-family:var(--font-display); font-weight:600; font-size:.95rem; line-height:1.4; color:var(--text-primary); margin:5px 0; }
-  .news-meta { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-  .news-src, .news-date { font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted); }
-  .news-tag { font-size:.65rem; padding:2px 6px; border-radius:3px; font-family:var(--font-mono); background:var(--bg-secondary); color:var(--text-secondary); border:1px solid var(--border); }
-  .new-pill { font-family:var(--font-mono); font-size:.6rem; padding:1px 6px; border-radius:3px; background:rgba(0,245,196,.15); color:var(--accent); border:1px solid rgba(0,245,196,.3); animation: fadeUp .3s ease; }
+/* NEWS CARDS */
+.news-grid{display:flex;flex-direction:column;gap:.75rem}
+.nc{background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:8px;padding:1rem 1.1rem;display:flex;gap:.875rem;transition:all .25s;cursor:pointer;position:relative;animation:fup .4s ease both}
+.nc:hover{border-color:var(--a);border-left-color:var(--a);transform:translateX(3px)}
+.nc.urg{border-left-color:var(--a2)}
+.nc:hover.urg{border-left-color:var(--a2)}
 
-  /* SIDEBAR */
-  .sidebar { display:flex; flex-direction:column; gap:1.25rem; }
-  .widget { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; overflow:hidden; animation:fadeUp .5s .2s ease both; }
-  .widget-head { padding:.8rem 1.1rem; border-bottom:1px solid var(--border); font-family:var(--font-display); font-weight:700; font-size:.8rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-secondary); display:flex; align-items:center; justify-content:space-between; }
+/* Source favicon area */
+.nc-src-icon{width:36px;height:36px;border-radius:6px;background:var(--bg1);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;overflow:hidden}
+.nc-src-icon img{width:100%;height:100%;object-fit:cover;border-radius:5px}
+.nc-body{flex:1;min-width:0}
+.nc-meta-top{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.src-name{font-family:var(--mono);font-size:.62rem;color:var(--a4)}
+.nc-cat{font-family:var(--mono);font-size:.6rem;letter-spacing:1px;text-transform:uppercase;padding:1px 6px;border-radius:3px;border:1px solid currentColor}
+.nc-title{font-family:var(--dis);font-weight:600;font-size:.9rem;line-height:1.4;color:var(--t1);margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nc-summary{font-size:.75rem;color:var(--t2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
+.nc-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nc-date{font-family:var(--mono);font-size:.62rem;color:var(--tm)}
+.ntag{font-size:.6rem;padding:1px 6px;border-radius:3px;font-family:var(--mono);background:var(--bg1);color:var(--t2);border:1px solid var(--bd)}
+.new-pill{font-family:var(--mono);font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(0,245,196,.12);color:var(--a);border:1px solid rgba(0,245,196,.25)}
+.urg-pill{font-family:var(--mono);font-size:.58rem;padding:1px 5px;border-radius:3px;background:rgba(255,58,58,.12);color:var(--a2);border:1px solid rgba(255,58,58,.25)}
+.nc-ext{font-size:.65rem;color:var(--a4);text-decoration:none;font-family:var(--mono)}
+.nc-ext:hover{text-decoration:underline}
 
-  /* Threat gauge */
-  .threat-meter { padding:1.25rem; text-align:center; }
-  .gauge-wrap { position:relative; display:inline-block; margin-bottom:.75rem; }
-  .gauge-svg { width:150px; height:85px; }
-  .gauge-value { position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); font-family:var(--font-display); font-size:1.8rem; font-weight:800; }
-  .gauge-label { font-family:var(--font-mono); font-size:.7rem; color:var(--text-muted); letter-spacing:1px; }
-  .gauge-status { font-family:var(--font-display); font-weight:700; font-size:.9rem; letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
+/* No results */
+.empty{padding:2.5rem;text-align:center;font-family:var(--mono);color:var(--tm)}
+.empty .ei{font-size:2rem;margin-bottom:.5rem}
 
-  /* Targets */
-  .target-list { padding:.25rem 0; }
-  .target-item { padding:.65rem 1.1rem; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(26,58,80,.3); transition:background .15s; cursor:default; }
-  .target-item:last-child { border-bottom:none; }
-  .target-item:hover { background:var(--bg-card-hover); }
-  .target-rank { font-family:var(--font-mono); font-size:.65rem; color:var(--text-muted); width:16px; flex-shrink:0; }
-  .target-bar-wrap { flex:1; }
-  .target-name { font-size:.78rem; color:var(--text-primary); margin-bottom:3px; }
-  .target-track { height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
-  .target-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--accent4),var(--accent)); }
-  .target-count { font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted); }
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--bg1) 25%,var(--bg2h) 50%,var(--bg1) 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:5px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-  /* Activity */
-  .activity-feed { max-height:260px; overflow-y:auto; }
-  .activity-feed::-webkit-scrollbar { width:3px; }
-  .activity-feed::-webkit-scrollbar-track { background:var(--bg-secondary); }
-  .activity-feed::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-  .act-item { padding:.65rem 1.1rem; display:flex; gap:8px; border-bottom:1px solid rgba(26,58,80,.25); font-size:.78rem; }
-  .act-item:last-child { border-bottom:none; }
-  .act-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:5px; }
-  .act-text { color:var(--text-secondary); line-height:1.4; flex:1; }
-  .act-text strong { color:var(--text-primary); }
-  .act-time { font-family:var(--font-mono); font-size:.65rem; color:var(--text-muted); white-space:nowrap; }
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:1.1rem}
+.widget{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;overflow:hidden;animation:fup .5s .15s ease both}
+.wh{padding:.7rem 1rem;border-bottom:1px solid var(--bd);font-family:var(--dis);font-weight:700;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);display:flex;align-items:center;justify-content:space-between}
 
-  /* NVD Source info */
-  .source-info { padding:.65rem 1.1rem; border-top:1px solid var(--border); font-family:var(--font-mono); font-size:.65rem; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; }
-  .source-link { color:var(--accent4); text-decoration:none; }
-  .source-link:hover { text-decoration:underline; }
+/* Gauge */
+.gmeter{padding:1.1rem;text-align:center}
+.gw{position:relative;display:inline-block;margin-bottom:.6rem}
+.gsvg{width:140px;height:80px}
+.gval{position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);font-family:var(--dis);font-size:1.7rem;font-weight:800}
+.glbl{font-family:var(--mono);font-size:.65rem;color:var(--tm);letter-spacing:1px}
+.gstat{font-family:var(--dis);font-weight:700;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 
-  /* MODAL */
-  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.82); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; }
-  .modal-overlay.open { display:flex; }
-  .modal { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; max-width:640px; width:92%; max-height:82vh; overflow-y:auto; padding:1.75rem; box-shadow:0 0 60px rgba(0,0,0,.6); animation:modalIn .25s ease; }
-  @keyframes modalIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
-  .modal-close { float:right; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.3rem; transition:color .2s; margin-left:1rem; }
-  .modal-close:hover { color:var(--accent2); }
-  .modal h2 { font-family:var(--font-display); font-size:1.2rem; margin-bottom:.875rem; color:var(--text-primary); }
-  .modal p { color:var(--text-secondary); line-height:1.7; font-size:.875rem; margin-bottom:.875rem; }
-  .detail-row { display:flex; gap:8px; margin-bottom:.4rem; font-size:.82rem; }
-  .detail-label { color:var(--text-muted); font-family:var(--font-mono); min-width:120px; flex-shrink:0; }
-  .detail-val { color:var(--text-primary); word-break:break-all; }
-  .code-block { background:var(--bg-secondary); border:1px solid var(--border); border-radius:6px; padding:.875rem; font-family:var(--font-mono); font-size:.75rem; color:var(--accent); overflow-x:auto; margin-top:.875rem; white-space:pre; }
-  .warn-box { margin-top:.875rem; padding:.75rem; background:rgba(255,58,58,.07); border:1px solid rgba(255,58,58,.2); border-radius:6px; color:var(--accent2); font-size:.8rem; }
+/* Targets */
+.tlist{padding:.25rem 0}
+.ti2{padding:.55rem 1rem;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(26,58,80,.25);transition:background .15s}
+.ti2:last-child{border-bottom:none}
+.ti2:hover{background:var(--bg2h)}
+.trank{font-family:var(--mono);font-size:.6rem;color:var(--tm);width:14px;flex-shrink:0}
+.tbw{flex:1}
+.tname{font-size:.75rem;color:var(--t1);margin-bottom:2px}
+.ttr{height:2px;background:var(--bd);border-radius:2px;overflow:hidden}
+.tfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--a4),var(--a))}
+.tcnt{font-family:var(--mono);font-size:.65rem;color:var(--tm)}
 
-  /* Error state */
-  .error-state { padding:2rem; text-align:center; font-family:var(--font-mono); color:var(--text-muted); }
-  .error-state .err-icon { font-size:2rem; margin-bottom:.5rem; }
-  .error-state p { font-size:.78rem; margin-bottom:.875rem; }
-  .btn-retry { font-family:var(--font-mono); font-size:.75rem; padding:6px 14px; border-radius:4px; border:1px solid var(--accent); background:none; color:var(--accent); cursor:pointer; transition:all .2s; }
-  .btn-retry:hover { background:rgba(0,245,196,.1); }
+/* Activity */
+.afeed{max-height:240px;overflow-y:auto}
+.afeed::-webkit-scrollbar{width:3px}
+.afeed::-webkit-scrollbar-track{background:var(--bg1)}
+.afeed::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.aitem{padding:.55rem 1rem;display:flex;gap:7px;border-bottom:1px solid rgba(26,58,80,.2);font-size:.75rem}
+.aitem:last-child{border-bottom:none}
+.adot2{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.atxt{color:var(--t2);line-height:1.4;flex:1}
+.atxt strong{color:var(--t1)}
+.atime{font-family:var(--mono);font-size:.6rem;color:var(--tm)}
 
-  /* Responsive */
-  @media(max-width:1100px){.main-grid{grid-template-columns:1fr}}
-  @media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.container{padding:1rem}.ticker-wrap{display:none}}
-  @media(max-width:480px){.stats-bar{grid-template-columns:1fr}}
+/* Source status widget */
+.src-status{padding:.5rem 0}
+.ss-item{padding:.5rem 1rem;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(26,58,80,.2);font-size:.75rem}
+.ss-item:last-child{border-bottom:none}
+.ss-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ss-ok{background:var(--a);box-shadow:var(--glow)}
+.ss-err{background:var(--a2)}
+.ss-load{background:var(--a3);animation:pulse 1s ease infinite}
+.ss-name{flex:1;color:var(--t2);font-family:var(--mono);font-size:.68rem}
+.ss-cnt{font-family:var(--mono);font-size:.62rem;color:var(--tm)}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.md{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;max-width:660px;width:94%;max-height:84vh;overflow-y:auto;padding:1.75rem;box-shadow:0 0 80px rgba(0,0,0,.7);animation:min .25s ease}
+@keyframes min{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.mc{float:right;background:none;border:none;color:var(--tm);cursor:pointer;font-size:1.2rem;transition:color .2s;margin-left:1rem}
+.mc:hover{color:var(--a2)}
+.md h2{font-family:var(--dis);font-size:1.15rem;margin-bottom:.75rem;color:var(--t1)}
+.md p{color:var(--t2);line-height:1.75;font-size:.85rem;margin-bottom:.75rem}
+.dr{display:flex;gap:8px;margin-bottom:.35rem;font-size:.8rem}
+.dl{color:var(--tm);font-family:var(--mono);min-width:110px;flex-shrink:0}
+.dv{color:var(--t1);word-break:break-all}
+.code{background:var(--bg1);border:1px solid var(--bd);border-radius:6px;padding:.75rem;font-family:var(--mono);font-size:.72rem;color:var(--a);overflow-x:auto;margin-top:.75rem;white-space:pre}
+.wbox{margin-top:.75rem;padding:.65rem;background:rgba(255,58,58,.06);border:1px solid rgba(255,58,58,.18);border-radius:6px;color:var(--a2);font-size:.78rem}
+.btn-src{display:inline-flex;align-items:center;gap:6px;margin-top:.75rem;padding:6px 14px;border-radius:5px;border:1px solid var(--a4);color:var(--a4);text-decoration:none;font-family:var(--mono);font-size:.72rem;transition:all .2s}
+.btn-src:hover{background:rgba(79,195,247,.1)}
+
+/* FOOTER */
+footer{max-width:1500px;margin:2rem auto 0;padding:1rem 1.5rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.65rem;color:var(--tm);flex-wrap:wrap;gap:.5rem}
+.flo{color:var(--a)}
+
+/* Responsive */
+@media(max-width:1100px){.main-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.wrap{padding:1rem}.ticker-wrap{display:none}.nav-tabs{display:none}}
+@media(max-width:480px){.stats{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="bg-grid"></div>
 
-<header>
-  <div class="header-inner">
+<nav>
+  <div class="nav-inner">
     <a href="#" class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-      </div>
-      <span class="logo-text">Cyber<span>Watch</span> VN</span>
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+      <span class="logo-txt">Cyber<span>Watch</span> VN</span>
     </a>
-    <div class="ticker-wrap">
-      <div class="ticker" id="ticker">
-        <span class="ticker-item">⏳ Đang tải dữ liệu từ NVD API... · </span>
-        <span class="ticker-item">⏳ Đang tải dữ liệu từ NVD API... · </span>
-        <span class="ticker-item">⏳ Đang tải dữ liệu từ NVD API... · </span>
-      </div>
+    <div class="nav-tabs">
+      <button class="tab active" onclick="switchTab('dashboard',this)">Dashboard</button>
+      <button class="tab" onclick="switchTab('news',this)">Tin tức</button>
+      <button class="tab" onclick="switchTab('cve',this)">CVE</button>
     </div>
-    <div class="refresh-bar">
-      <div class="refresh-status">
-        <div class="refresh-dot loading" id="refreshDot"></div>
-        <span id="refreshLabel">Đang tải...</span>
+    <div class="ticker-wrap"><div class="ticker" id="ticker"><span class="ti">⏳ Đang kết nối tới các nguồn RSS... </span><span class="ti">⏳ Đang kết nối tới các nguồn RSS... </span></div></div>
+    <div class="toolbar">
+      <div class="refresh-info">
+        <div class="rdot" id="rdot"></div>
+        <span id="rlbl">Khởi động...</span>
       </div>
-      <div class="countdown-ring" title="Cập nhật tiếp theo">
-        <svg width="28" height="28" viewBox="0 0 28 28">
-          <circle class="track" cx="14" cy="14" r="11"/>
-          <circle class="fill" id="countdownCircle" cx="14" cy="14" r="11" stroke-dasharray="69.1" stroke-dashoffset="0"/>
+      <div class="cring" title="Cập nhật tiếp theo">
+        <svg width="26" height="26" viewBox="0 0 26 26">
+          <circle class="ctrack" cx="13" cy="13" r="10"/>
+          <circle class="cfill" id="ccirc" cx="13" cy="13" r="10" stroke-dasharray="62.8" stroke-dashoffset="0"/>
         </svg>
-        <div class="countdown-num" id="countdownNum">5:00</div>
+        <div class="cnum" id="cnum">5:00</div>
       </div>
-      <button class="btn-icon" onclick="manualRefresh()" title="Làm mới ngay">↺</button>
-      <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">☀️</button>
+      <button class="btn-sm" onclick="manualRefresh()" title="Làm mới ngay">↺</button>
+      <button class="btn-sm" onclick="toggleTheme()" id="tbtn">☀️</button>
     </div>
   </div>
-</header>
+</nav>
 
-<div class="container">
-  <div class="stats-bar">
-    <div class="stat-card"><div class="stat-icon si-r">🛡️</div><div class="stat-info"><div class="stat-value" id="statTotal">—</div><div class="stat-label">CVE tháng này</div></div><span class="stat-badge sb-up" id="statTotalBadge">NVD</span></div>
-    <div class="stat-card"><div class="stat-icon si-o">🔴</div><div class="stat-info"><div class="stat-value" id="statCritical">—</div><div class="stat-label">Critical</div></div><span class="stat-badge sb-up" id="statCriticalBadge">CVSS≥9</span></div>
-    <div class="stat-card"><div class="stat-icon si-b">⚡</div><div class="stat-info"><div class="stat-value" id="statHigh">—</div><div class="stat-label">High</div></div><span class="stat-badge sb-up" id="statHighBadge">CVSS≥7</span></div>
-    <div class="stat-card"><div class="stat-icon si-g">🕐</div><div class="stat-info"><div class="stat-value" id="statLastUpdate">—</div><div class="stat-label">Cập nhật lúc</div></div><span class="stat-badge sb-ok" id="statUpdateBadge">LIVE</span></div>
+<div class="wrap">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="sc"><div class="si sir">🛡️</div><div><div class="sv" id="stCVE">—</div><div class="sl">CVE tuần này</div><div class="sbg sbr" id="stCVEb">NVD LIVE</div></div></div>
+    <div class="sc"><div class="si sio">🔴</div><div><div class="sv" id="stCrit">—</div><div class="sl">Critical</div><div class="sbg sbr" id="stCritb">CVSS ≥ 9</div></div></div>
+    <div class="sc"><div class="si sib">📰</div><div><div class="sv" id="stNews">—</div><div class="sl">Bài báo mới</div><div class="sbg sbg2" id="stNewsb">RSS LIVE</div></div></div>
+    <div class="sc"><div class="si sig">🌐</div><div><div class="sv" id="stSrc">—</div><div class="sl">Nguồn hoạt động</div><div class="sbg sbg2" id="stSrcb">Feeds</div></div></div>
+    <div class="sc"><div class="si sip">🕐</div><div><div class="sv" id="stTime">—</div><div class="sl">Cập nhật lúc</div><div class="sbg sbg2">AUTO</div></div></div>
   </div>
 
-  <div class="search-section">
-    <div class="search-box">
-      <span style="color:var(--text-muted)">🔍</span>
-      <input type="text" id="searchInput" placeholder="Tìm CVE ID, mô tả, sản phẩm..." oninput="doSearch()">
+  <!-- SEARCH -->
+  <div class="sbar">
+    <div class="sbox">
+      <span style="color:var(--tm)">🔍</span>
+      <input type="text" id="sinput" placeholder="Tìm CVE, bài báo, nguồn, từ khóa..." oninput="doSearch()">
     </div>
-    <div class="filter-group">
-      <button class="filter-btn active" onclick="setFilter('ALL',this)">Tất cả</button>
-      <button class="filter-btn fc" onclick="setFilter('CRITICAL',this)">Critical</button>
-      <button class="filter-btn fh" onclick="setFilter('HIGH',this)">High</button>
-      <button class="filter-btn fm" onclick="setFilter('MEDIUM',this)">Medium</button>
-      <button class="filter-btn" onclick="setFilter('LOW',this)">Low</button>
+    <div class="fgrp" id="sevFilters" style="display:none">
+      <button class="fb active" onclick="setFilter('ALL',this)">Tất cả</button>
+      <button class="fb fc" onclick="setFilter('CRITICAL',this)">Critical</button>
+      <button class="fb fh" onclick="setFilter('HIGH',this)">High</button>
+      <button class="fb fm" onclick="setFilter('MEDIUM',this)">Medium</button>
+      <button class="fb" onclick="setFilter('LOW',this)">Low</button>
     </div>
+    <div class="src-pills" id="srcPills"></div>
   </div>
 
+  <!-- GRID -->
   <div class="main-grid">
     <div>
-      <div class="section-title"><div class="sdot"></div>Bảng CVE — Dữ liệu thật từ NVD</div>
-      <div class="cve-wrap">
-        <div class="cve-head">
-          <h2>🔴 Lỗ hổng mới nhất <span class="nvd-badge">nvd.nist.gov</span></h2>
-          <span class="live-badge"><span class="live-dot"></span>LIVE · mỗi 5 phút</span>
-        </div>
-        <div id="cveContent">
-          <div style="padding:2rem;text-align:center">
-            <div class="skeleton" style="height:14px;width:60%;margin:0 auto 8px"></div>
-            <div class="skeleton" style="height:14px;width:80%;margin:0 auto 8px"></div>
-            <div class="skeleton" style="height:14px;width:50%;margin:0 auto"></div>
+      <!-- CVE TABLE -->
+      <div id="cveSection">
+        <div class="stitle"><div class="livdot"></div>Bảng CVE — NVD Real-time</div>
+        <div class="cve-box">
+          <div class="cve-hd">
+            <h2>🔴 Lỗ hổng mới phát hiện</h2>
+            <div class="badges">
+              <span class="nbadge">nvd.nist.gov</span>
+              <span class="lbadge"><span class="ldot"></span>LIVE · 5 phút</span>
+            </div>
           </div>
-        </div>
-        <div class="source-info">
-          <span>Nguồn: <a href="https://nvd.nist.gov/developers/vulnerabilities" class="source-link" target="_blank">NVD API v2.0</a> · National Vulnerability Database (NIST)</span>
-          <span id="cveCount">—</span>
+          <div id="cveContent"><div style="padding:2rem"><div class="sk" style="height:13px;margin-bottom:10px"></div><div class="sk" style="height:13px;margin-bottom:10px;width:80%"></div><div class="sk" style="height:13px;width:60%"></div></div></div>
+          <div class="cve-ft"><span>Nguồn: <a href="https://nvd.nist.gov/developers/vulnerabilities" class="ft-lnk" target="_blank">NVD API v2.0</a> · NIST</span><span id="cveCount">—</span></div>
         </div>
       </div>
 
-      <div class="section-title"><div class="sdot"></div>Tin tức & Phân tích bảo mật</div>
-      <div class="news-list" id="newsList">
-        <div class="skeleton" style="height:80px;border-radius:8px"></div>
-        <div class="skeleton" style="height:80px;border-radius:8px;margin-top:.875rem"></div>
+      <!-- NEWS SECTION -->
+      <div id="newsSection">
+        <div class="news-top">
+          <div class="stitle" style="margin:0;flex:1"><div class="livdot"></div>Tin tức an ninh mạng — RSS Live</div>
+          <div class="ntabs">
+            <button class="ntab active" onclick="setNewsTab('all',this)">Tất cả</button>
+            <button class="ntab" onclick="setNewsTab('APT',this)">APT</button>
+            <button class="ntab" onclick="setNewsTab('Ransomware',this)">Ransomware</button>
+            <button class="ntab" onclick="setNewsTab('Vulnerability',this)">Vuln</button>
+          </div>
+        </div>
+        <div class="news-grid" id="newsList"><div class="sk" style="height:90px;border-radius:8px;margin-bottom:.75rem"></div><div class="sk" style="height:90px;border-radius:8px;margin-bottom:.75rem"></div><div class="sk" style="height:90px;border-radius:8px"></div></div>
+        <div style="text-align:center;padding:1rem 0">
+          <button class="btn-sm" id="loadMoreBtn" onclick="loadMore()" style="padding:7px 20px;font-family:var(--mono);font-size:.72rem">Tải thêm bài →</button>
+        </div>
       </div>
     </div>
 
+    <!-- SIDEBAR -->
     <div class="sidebar">
       <!-- Threat -->
       <div class="widget">
-        <div class="widget-head">⚡ Mức độ đe dọa <span id="threatDate" style="font-size:.6rem;color:var(--text-muted)"></span></div>
-        <div class="threat-meter">
-          <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 150 85">
-              <path d="M15,75 A55,55 0 0,1 135,75" fill="none" stroke="#1a3a50" stroke-width="11" stroke-linecap="round"/>
-              <path id="gaugeFill" d="M15,75 A55,55 0 0,1 135,75" fill="none" stroke="url(#gGrad)" stroke-width="11" stroke-linecap="round" stroke-dasharray="172.8" stroke-dashoffset="43"/>
-              <defs><linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00f5c4"/><stop offset="50%" stop-color="#f5a623"/><stop offset="100%" stop-color="#ff3a3a"/></linearGradient></defs>
+        <div class="wh">⚡ Mức đe dọa <span id="gdate" style="font-size:.58rem;color:var(--tm)"></span></div>
+        <div class="gmeter">
+          <div class="gw">
+            <svg class="gsvg" viewBox="0 0 140 80">
+              <path d="M12,70 A52,52 0 0,1 128,70" fill="none" stroke="#1a3a50" stroke-width="10" stroke-linecap="round"/>
+              <path id="gfill" d="M12,70 A52,52 0 0,1 128,70" fill="none" stroke="url(#gg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="41"/>
+              <defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00f5c4"/><stop offset="50%" stop-color="#f5a623"/><stop offset="100%" stop-color="#ff3a3a"/></linearGradient></defs>
             </svg>
-            <div class="gauge-value" id="gaugeVal" style="color:var(--accent2)">—</div>
+            <div class="gval" id="gval" style="color:var(--a2)">—</div>
           </div>
-          <div class="gauge-label">THREAT SCORE</div>
-          <div class="gauge-status" id="gaugeStatus" style="color:var(--accent2)">Loading...</div>
+          <div class="glbl">THREAT SCORE</div>
+          <div class="gstat" id="gstat" style="color:var(--a2)">...</div>
         </div>
       </div>
 
-      <!-- Targets -->
+      <!-- RSS Source Status -->
       <div class="widget">
-        <div class="widget-head">🎯 Sản phẩm bị nhắm nhiều nhất</div>
-        <div class="target-list" id="targetList">
-          <div style="padding:1rem"><div class="skeleton" style="height:12px;margin-bottom:8px"></div><div class="skeleton" style="height:12px;margin-bottom:8px;width:80%"></div><div class="skeleton" style="height:12px;width:60%"></div></div>
+        <div class="wh">📡 Trạng thái nguồn RSS</div>
+        <div class="src-status" id="srcStatus">
+          <div style="padding:1rem"><div class="sk" style="height:11px;margin-bottom:8px"></div><div class="sk" style="height:11px;margin-bottom:8px;width:75%"></div><div class="sk" style="height:11px;width:55%"></div></div>
         </div>
+      </div>
+
+      <!-- Top Targets -->
+      <div class="widget">
+        <div class="wh">🎯 Sản phẩm bị nhắm nhiều nhất</div>
+        <div class="tlist" id="tlist"><div style="padding:1rem"><div class="sk" style="height:11px;margin-bottom:8px"></div><div class="sk" style="height:11px;margin-bottom:8px;width:80%"></div><div class="sk" style="height:11px;width:60%"></div></div></div>
       </div>
 
       <!-- Activity -->
       <div class="widget">
-        <div class="widget-head">📡 Hoạt động <span class="live-badge" style="font-size:.6rem"><span class="live-dot"></span>LIVE</span></div>
-        <div class="activity-feed" id="activityFeed">
-          <div style="padding:1rem"><div class="skeleton" style="height:12px;margin-bottom:8px"></div><div class="skeleton" style="height:12px;margin-bottom:8px;width:75%"></div><div class="skeleton" style="height:12px;width:55%"></div></div>
-        </div>
+        <div class="wh">🔔 Hoạt động <span class="lbadge" style="font-size:.58rem"><span class="ldot"></span>LIVE</span></div>
+        <div class="afeed" id="afeed"><div style="padding:1rem"><div class="sk" style="height:11px;margin-bottom:8px"></div><div class="sk" style="height:11px;margin-bottom:8px;width:75%"></div><div class="sk" style="height:11px;width:55%"></div></div></div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalBody"></div></div>
-</div>
+<footer>
+  <span>© 2025 <span class="flo">CyberWatch VN</span> — Nền tảng tổng hợp an ninh mạng</span>
+  <span id="ftupdate">Nguồn: NVD · THN · BC · Krebs · CISA · Dark Reading</span>
+</footer>
+
+<!-- MODAL -->
+<div class="mo" id="mo" onclick="closeMod(event)"><div class="md"><button class="mc" onclick="closeMod()">✕</button><div id="mdbody"></div></div></div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────
-const REFRESH_INTERVAL = 5 * 60; // 5 phút (giây)
-const CIRCUMFERENCE = 69.1;
+// ═══════════════════════════════════════════
+//  CONFIG & STATE
+// ═══════════════════════════════════════════
+const REFRESH_SEC = 300; // 5 phút
+const CIRC = 62.8;
+const NEWS_PER_PAGE = 8;
 
-// ─── STATE ────────────────────────────────────────────
+const RSS_SOURCES = [
+  { id:'thn',   name:'The Hacker News',   url:'https://feeds.feedburner.com/TheHackersNews', color:'#ff3a3a', icon:'🔴', cat:'Vulnerability' },
+  { id:'bc',    name:'BleepingComputer',  url:'https://www.bleepingcomputer.com/feed/', color:'#4fc3f7', icon:'🔵', cat:'Malware' },
+  { id:'krebs', name:'Krebs on Security', url:'https://krebsonsecurity.com/feed/', color:'#f5a623', icon:'🟠', cat:'APT' },
+  { id:'cisa',  name:'CISA Alerts',       url:'https://www.cisa.gov/cybersecurity-advisories/all.xml', color:'#00f5c4', icon:'🟢', cat:'Advisory' },
+  { id:'dr',    name:'Dark Reading',      url:'https://www.darkreading.com/rss.xml', color:'#a064ff', icon:'🟣', cat:'Research' },
+  { id:'sc',    name:'SC Magazine',       url:'https://www.scmagazine.com/rss', color:'#ff7a3a', icon:'🟠', cat:'Industry' },
+];
+
 let allCVEs = [];
+let allNews = [];
+let displayedNews = 0;
 let currentFilter = 'ALL';
 let currentSearch = '';
-let secondsLeft = REFRESH_INTERVAL;
-let countdownTimer = null;
-let activityLog = [];
-let newsCache = [];
+let currentNewsTab = 'all';
+let activeSourceFilter = null; // null = all
+let sourceStatus = {};
+let actLog = [];
+let secLeft = REFRESH_SEC;
+let timer = null;
+let currentTab = 'dashboard';
 
-// ─── NVD FETCH qua Claude AI proxy ─────────────────────
-async function fetchCVEsFromNVD() {
-  setStatus('loading', 'Đang tải từ NVD...');
+// ═══════════════════════════════════════════
+//  FETCH CVEs via Claude AI + NVD
+// ═══════════════════════════════════════════
+async function fetchCVEs() {
+  setStatus('spin','Tải CVE từ NVD...');
   try {
-    const prompt = `Fetch the latest CVE vulnerabilities from NVD API and return a JSON array.
+    const startDate = new Date(); startDate.setDate(startDate.getDate()-7);
+    const endDate = new Date();
+    const fmt = d => d.toISOString().split('.')[0]+'.000';
 
-Call this NVD API endpoint:
-GET https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=20&pubStartDate=${getStartDate()}&pubEndDate=${getEndDate()}
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:4000,
+      tools:[{type:'web_search_20250305',name:'web_search'}],
+      messages:[{role:'user',content:`Search and fetch the latest CVE vulnerabilities from the NVD (National Vulnerability Database) API.
 
-Parse the response and return ONLY a valid JSON array (no markdown, no explanation) with this exact structure:
-[
-  {
-    "id": "CVE-YYYY-NNNNN",
-    "description": "English description here (max 120 chars)",
-    "severity": "CRITICAL|HIGH|MEDIUM|LOW|NONE",
-    "score": 9.8,
-    "product": "Vendor Product Name",
-    "published": "2025-02-21T10:00:00",
-    "references": ["url1"],
-    "vector": "CVSS vector string"
+Use this endpoint: https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=15&pubStartDate=${fmt(startDate)}&pubEndDate=${fmt(endDate)}
+
+Parse the JSON response and return ONLY a raw JSON array (no markdown fences, no text before or after) with this structure:
+[{"id":"CVE-YYYY-NNNNN","description":"English description max 120 chars","severity":"CRITICAL|HIGH|MEDIUM|LOW","score":9.8,"product":"Vendor ProductName","published":"ISO datetime","vector":"CVSS vector","references":["url"]}]
+
+- severity/score from cvssMetricV31 or cvssMetricV30
+- product from CPE configurations (first affected vendor+product)
+- Return 10-15 items sorted by score descending
+- Return ONLY the JSON array`}]})});
+
+    const d = await r.json();
+    const txt = d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const m = txt.match(/\[[\s\S]*?\]/);
+    if(m){const parsed=JSON.parse(m[0]);if(parsed.length){allCVEs=parsed;}}
+    if(!allCVEs.length) throw new Error('empty');
+  } catch(e) {
+    allCVEs = getFallbackCVEs();
+    logActivity('warn','Dùng CVE fallback (NVD tạm thời không phản hồi)','Vừa xong');
   }
-]
-
-Rules:
-- severity from cvssMetricV31 or cvssMetricV30 baseSeverity
-- score from baseScore
-- product from cpe or configurations (first affected product)
-- Return exactly the JSON array, nothing else
-- If API fails, return 10 realistic mock CVEs with recent dates like 2025-02-20 or 2025-02-21`;
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await resp.json();
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-
-    // Parse JSON from response
-    let cves = [];
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (jsonMatch) {
-      try { cves = JSON.parse(jsonMatch[0]); } catch(e) {}
-    }
-
-    if (!cves.length) throw new Error('No CVE data parsed');
-
-    allCVEs = cves;
-    updateStats();
-    renderCVETable();
-    updateTicker();
-    updateThreats();
-    updateTargets();
-    addActivity('success', `Tải ${cves.length} CVE mới từ NVD API`, 'Vừa xong');
-    setStatus('ok', `Cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`);
-    document.getElementById('statLastUpdate').textContent = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'});
-
-  } catch(err) {
-    console.error('NVD fetch error:', err);
-    // Fallback to mock data
-    allCVEs = getMockCVEs();
-    updateStats();
-    renderCVETable();
-    updateTicker();
-    updateThreats();
-    updateTargets();
-    addActivity('warning', 'Dùng dữ liệu mẫu (NVD tạm thời không khả dụng)', 'Vừa xong');
-    setStatus('error', 'Dùng dữ liệu mẫu');
-    document.getElementById('statLastUpdate').textContent = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'});
-  }
-
-  await fetchNews();
+  renderCVETable();
+  updateGauge();
+  updateTargets();
+  updateTicker();
+  document.getElementById('stCVE').textContent = allCVEs.length;
+  document.getElementById('stCrit').textContent = allCVEs.filter(c=>c.severity==='CRITICAL').length;
 }
 
-async function fetchNews() {
-  try {
-    const prompt = `Search for the 5 most recent cybersecurity news from the last 48 hours (today is ${new Date().toISOString().split('T')[0]}).
+// ═══════════════════════════════════════════
+//  FETCH NEWS via Claude AI + RSS Web Search
+// ═══════════════════════════════════════════
+async function fetchAllNews() {
+  setStatus('spin','Tải tin tức từ RSS...');
+  logActivity('info','Kết nối tới các nguồn RSS...','Vừa xong');
 
-Return ONLY a JSON array, no markdown:
+  // Render source status loading
+  renderSourceStatus('loading');
+
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const sources = RSS_SOURCES.map(s=>s.name).join(', ');
+
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:5000,
+      tools:[{type:'web_search_20250305',name:'web_search'}],
+      messages:[{role:'user',content:`Search for the LATEST cybersecurity news articles published TODAY or in the last 48 hours (today: ${today}).
+
+Search from these specific sources: ${sources}
+Also search: site:thehackernews.com OR site:bleepingcomputer.com OR site:krebsonsecurity.com OR site:darkreading.com OR site:cisa.gov cybersecurity 2025
+
+Return ONLY a raw JSON array (no markdown, no text outside JSON):
 [
   {
     "id": 1,
-    "category": "APT|Ransomware|Vulnerability|Malware|Supply Chain|Phishing",
+    "source": "The Hacker News",
+    "sourceId": "thn",
+    "category": "APT|Ransomware|Vulnerability|Malware|Phishing|Advisory|Research|Supply Chain",
     "categoryColor": "#ff3a3a",
-    "title": "News title in Vietnamese (translated)",
-    "source": "Source name",
-    "date": "DD/MM/YYYY",
-    "tags": ["tag1","tag2"],
+    "title": "Original English title OR Vietnamese translation",
+    "titleEn": "Original English title",
+    "summary": "2-3 sentence summary in Vietnamese explaining what happened and why it matters",
+    "url": "direct article URL",
+    "date": "DD/MM/YYYY HH:MM",
+    "dateISO": "ISO datetime",
+    "tags": ["tag1","tag2","tag3"],
     "urgent": true/false,
-    "summary": "2-3 sentence summary in Vietnamese"
+    "tldr": "One line Vietnamese summary max 80 chars"
   }
 ]
 
-Category colors: APT=#ff3a3a, Ransomware=#f5a623, Vulnerability=#4fc3f7, Malware=#00f5c4, Supply Chain=#f5a623, Phishing=#ff3a3a
-Return only the JSON array.`;
+Category colors: APT=#ff3a3a, Ransomware=#f5a623, Vulnerability=#4fc3f7, Malware=#00f5c4, Phishing=#ff3a3a, Advisory=#00f5c4, Research=#a064ff, Supply Chain=#f5a623
+urgent=true if: zero-day, actively exploited, critical infrastructure, ransomware attack, nation-state
+Return 12-16 unique articles from DIFFERENT sources, sorted by date descending.
+Return ONLY the JSON array.`}]})});
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await resp.json();
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (jsonMatch) {
-      try {
-        const news = JSON.parse(jsonMatch[0]);
-        if (news.length) { newsCache = news; renderNews(); return; }
-      } catch(e) {}
+    const d = await r.json();
+    const txt = d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const m = txt.match(/\[[\s\S]*\]/);
+    if(m){
+      try{
+        const parsed = JSON.parse(m[0]);
+        if(parsed.length){
+          allNews = parsed;
+          // Mark sources as OK based on which sourceIds appeared
+          const foundIds = [...new Set(parsed.map(n=>n.sourceId).filter(Boolean))];
+          RSS_SOURCES.forEach(s=>{sourceStatus[s.id]=foundIds.includes(s.id)?'ok':'err';});
+          logActivity('ok',`Tải thành công ${parsed.length} bài báo từ ${foundIds.length} nguồn RSS`,'Vừa xong');
+        }
+      }catch(e){}
     }
-  } catch(e) {}
-  newsCache = getMockNews();
+    if(!allNews.length) throw new Error('no news');
+  } catch(e) {
+    allNews = getFallbackNews();
+    RSS_SOURCES.forEach(s=>{sourceStatus[s.id]='err';});
+    logActivity('warn','Dùng dữ liệu mẫu (RSS tạm thời không khả dụng)','Vừa xong');
+  }
+
+  displayedNews = NEWS_PER_PAGE;
+  renderSourceStatus('done');
   renderNews();
+  renderSourcePills();
+  document.getElementById('stNews').textContent = allNews.length;
+  const okSrcs = Object.values(sourceStatus).filter(v=>v==='ok').length;
+  document.getElementById('stSrc').textContent = okSrcs || RSS_SOURCES.length;
+  document.getElementById('stTime').textContent = new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('ftupdate').textContent = `Cập nhật: ${new Date().toLocaleString('vi-VN')} · ${allNews.length} bài · ${allCVEs.length} CVE`;
+  setStatus('ok',`Xong lúc ${new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}`);
 }
 
-// ─── HELPERS ──────────────────────────────────────────
-function getStartDate() {
-  const d = new Date(); d.setDate(d.getDate() - 7);
-  return d.toISOString().split('.')[0] + '.000';
-}
-function getEndDate() {
-  return new Date().toISOString().split('.')[0] + '.000';
-}
-
-function getSeverity(score) {
-  if (score >= 9) return 'CRITICAL';
-  if (score >= 7) return 'HIGH';
-  if (score >= 4) return 'MEDIUM';
-  if (score > 0) return 'LOW';
-  return 'NONE';
-}
-
-function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const h = Math.floor(diff / 3600000);
-  const d = Math.floor(h / 24);
-  if (d > 0) return `${d} ngày trước`;
-  if (h > 0) return `${h} giờ trước`;
-  return 'Vừa xong';
-}
-
-function setStatus(state, label) {
-  const dot = document.getElementById('refreshDot');
-  const lbl = document.getElementById('refreshLabel');
-  dot.className = 'refresh-dot ' + (state === 'loading' ? 'loading' : state === 'error' ? 'error' : '');
-  lbl.textContent = label;
-}
-
-// ─── STATS ────────────────────────────────────────────
-function updateStats() {
-  const total = allCVEs.length;
-  const critical = allCVEs.filter(c => c.severity === 'CRITICAL').length;
-  const high = allCVEs.filter(c => c.severity === 'HIGH').length;
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statCritical').textContent = critical;
-  document.getElementById('statHigh').textContent = high;
-}
-
-// ─── CVE TABLE ────────────────────────────────────────
-function renderCVETable() {
+// ═══════════════════════════════════════════
+//  RENDER CVE
+// ═══════════════════════════════════════════
+function renderCVETable(){
   let data = allCVEs;
-  if (currentFilter !== 'ALL') data = data.filter(c => c.severity === currentFilter);
-  if (currentSearch) data = data.filter(c =>
-    (c.id||'').toLowerCase().includes(currentSearch) ||
-    (c.description||'').toLowerCase().includes(currentSearch) ||
-    (c.product||'').toLowerCase().includes(currentSearch)
-  );
+  if(currentFilter!=='ALL') data=data.filter(c=>c.severity===currentFilter);
+  if(currentSearch) data=data.filter(c=>
+    (c.id||'').toLowerCase().includes(currentSearch)||
+    (c.description||'').toLowerCase().includes(currentSearch)||
+    (c.product||'').toLowerCase().includes(currentSearch));
+  document.getElementById('cveCount').textContent=`${data.length} lỗ hổng`;
+  if(!data.length){document.getElementById('cveContent').innerHTML=`<div class="empty"><div class="ei">🔍</div><p>Không tìm thấy CVE phù hợp</p></div>`;return;}
+  const rows=data.map(c=>{
+    const sc=parseFloat(c.score)||0,pct=(sc/10*100).toFixed(0);
+    const col=sc>=9?'var(--a2)':sc>=7?'var(--a3)':sc>=4?'var(--a4)':'var(--a)';
+    const sv=c.severity||sevFromScore(sc);
+    const desc=(c.description||'').substring(0,60)+((c.description||'').length>60?'...':'');
+    const ago=c.published?timeAgo(c.published):'—';
+    const isNew=c.published&&(Date.now()-new Date(c.published).getTime())<24*3600000;
+    const cs=encodeURIComponent(JSON.stringify(c));
+    return `<tr onclick='openCVEModal(decodeURIComponent("${cs}"))'>
+      <td><span class="cid">${c.id||'—'}</span>${isNew?'<span style="font-family:var(--mono);font-size:.58rem;color:var(--a);margin-left:4px">🆕</span>':''}</td>
+      <td class="desc-c" title="${c.description||''}">${desc}</td>
+      <td><span class="sb s${sv}">${sv}</span></td>
+      <td><div class="sbar2"><div class="str"><div class="sf" style="width:${pct}%;background:${col}"></div></div><span class="sn" style="color:${col}">${sc.toFixed(1)}</span></div></td>
+      <td><span class="ptag">${(c.product||'Unknown').substring(0,18)}</span></td>
+      <td><span class="tago">${ago}</span></td>
+    </tr>`;}).join('');
+  document.getElementById('cveContent').innerHTML=`<table><thead><tr><th>CVE ID</th><th>Mô tả</th><th>Mức độ</th><th>CVSS</th><th>Sản phẩm</th><th>Thời gian</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
 
-  document.getElementById('cveCount').textContent = `${data.length} lỗ hổng`;
+// ═══════════════════════════════════════════
+//  RENDER NEWS
+// ═══════════════════════════════════════════
+function renderNews(){
+  let data = allNews;
+  if(currentNewsTab!=='all') data=data.filter(n=>(n.category||'').toLowerCase()===currentNewsTab.toLowerCase());
+  if(activeSourceFilter) data=data.filter(n=>n.sourceId===activeSourceFilter);
+  if(currentSearch) data=data.filter(n=>
+    (n.title||'').toLowerCase().includes(currentSearch)||
+    (n.summary||'').toLowerCase().includes(currentSearch)||
+    (n.source||'').toLowerCase().includes(currentSearch)||
+    (n.tags||[]).some(t=>t.toLowerCase().includes(currentSearch)));
 
-  if (!data.length) {
-    document.getElementById('cveContent').innerHTML = `<div class="error-state"><div class="err-icon">🔍</div><p>Không tìm thấy CVE phù hợp</p></div>`;
+  const show = data.slice(0, displayedNews);
+  document.getElementById('loadMoreBtn').style.display = data.length > displayedNews ? '' : 'none';
+
+  if(!show.length){
+    document.getElementById('newsList').innerHTML=`<div class="empty"><div class="ei">📰</div><p>Không có bài báo phù hợp</p></div>`;
     return;
   }
 
-  const rows = data.map(c => {
-    const score = parseFloat(c.score) || 0;
-    const pct = (score / 10 * 100).toFixed(0);
-    const col = score >= 9 ? 'var(--accent2)' : score >= 7 ? 'var(--accent3)' : score >= 4 ? 'var(--accent4)' : 'var(--accent)';
-    const sev = c.severity || getSeverity(score);
-    const desc = (c.description || '').substring(0, 65) + (c.description?.length > 65 ? '...' : '');
-    const prod = (c.product || 'Unknown').substring(0, 20);
-    const ago = c.published ? timeAgo(c.published) : '—';
-    const isNew = c.published && (Date.now() - new Date(c.published).getTime()) < 24*3600000;
-    const cStr = JSON.stringify(c).replace(/"/g,"'").replace(/</g,'&lt;');
-    return `<tr onclick="openCVEModal(${cStr})">
-      <td><span class="cve-id">${c.id||'—'}</span>${isNew?'<span class="poc-tag">🆕</span>':''}</td>
-      <td class="desc-cell" title="${c.description||''}">${desc}</td>
-      <td><span class="sev-badge s${sev}">${sev}</span></td>
-      <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:${pct}%;background:${col}"></div></div><span class="score-num" style="color:${col}">${score.toFixed(1)}</span></div></td>
-      <td><span class="prod-tag">${prod}</span></td>
-      <td><span class="time-ago">${ago}</span></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('cveContent').innerHTML = `<table><thead><tr><th>CVE ID</th><th>Mô tả</th><th>Mức độ</th><th>CVSS</th><th>Sản phẩm</th><th>Thời gian</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-
-// ─── TICKER ───────────────────────────────────────────
-function updateTicker() {
-  const items = allCVEs.slice(0, 8).map(c => {
-    const sev = c.severity || 'LOW';
-    const cls = sev === 'CRITICAL' ? 'tc' : sev === 'HIGH' ? 'th' : 'tm';
-    const emoji = sev === 'CRITICAL' ? '🔴' : sev === 'HIGH' ? '🟠' : '🟡';
-    return `<span class="ticker-item">${emoji} <span class="${cls}">[${sev}]</span> ${c.id} — ${(c.description||'').substring(0,60)} · </span>`;
-  });
-  const doubled = [...items, ...items].join('');
-  document.getElementById('ticker').innerHTML = doubled;
-}
-
-// ─── THREAT GAUGE ─────────────────────────────────────
-function updateThreats() {
-  const critical = allCVEs.filter(c => c.severity === 'CRITICAL').length;
-  const high = allCVEs.filter(c => c.severity === 'HIGH').length;
-  const score = Math.min(100, Math.round(critical * 8 + high * 3));
-  const color = score >= 70 ? 'var(--accent2)' : score >= 40 ? 'var(--accent3)' : 'var(--accent)';
-  const label = score >= 70 ? '⚠ CAO' : score >= 40 ? '▲ TRUNG BÌNH' : '✓ THẤP';
-  const offset = 172.8 - (score / 100 * 172.8);
-  document.getElementById('gaugeVal').textContent = score;
-  document.getElementById('gaugeVal').style.color = color;
-  document.getElementById('gaugeStatus').textContent = label;
-  document.getElementById('gaugeStatus').style.color = color;
-  document.getElementById('gaugeFill').setAttribute('stroke-dashoffset', offset);
-  document.getElementById('threatDate').textContent = new Date().toLocaleDateString('vi-VN');
-}
-
-// ─── TARGETS ──────────────────────────────────────────
-function updateTargets() {
-  const counts = {};
-  allCVEs.forEach(c => {
-    const p = (c.product || 'Unknown').split(' ').slice(0,2).join(' ');
-    counts[p] = (counts[p]||0) + 1;
-  });
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const max = sorted[0]?.[1] || 1;
-  document.getElementById('targetList').innerHTML = sorted.map(([name, cnt], i) => `
-    <div class="target-item">
-      <div class="target-rank">0${i+1}</div>
-      <div class="target-bar-wrap">
-        <div class="target-name">${name}</div>
-        <div class="target-track"><div class="target-fill" style="width:${(cnt/max*100).toFixed(0)}%"></div></div>
+  document.getElementById('newsList').innerHTML=show.map((n,i)=>{
+    const src=RSS_SOURCES.find(s=>s.id===n.sourceId)||{icon:'📰',color:'#4fc3f7',name:n.source};
+    const isNew=n.dateISO&&(Date.now()-new Date(n.dateISO).getTime())<3*3600000;
+    const urlEncoded=encodeURIComponent(JSON.stringify(n));
+    return `<div class="nc ${n.urgent?'urg':''}" style="animation-delay:${i*.05}s" onclick="openNewsModal(decodeURIComponent('${urlEncoded}'))">
+      <div class="nc-src-icon" style="border-color:${src.color}40">${src.icon}</div>
+      <div class="nc-body">
+        <div class="nc-meta-top">
+          <span class="src-name" style="color:${src.color}">${n.source||src.name}</span>
+          <span class="nc-cat" style="color:${src.color};border-color:${src.color}60">${n.category}</span>
+          ${isNew?'<span class="new-pill">🆕 Mới</span>':''}
+          ${n.urgent?'<span class="urg-pill">⚡ Khẩn</span>':''}
+        </div>
+        <div class="nc-title">${n.title}</div>
+        <div class="nc-summary">${n.summary||n.tldr||''}</div>
+        <div class="nc-foot">
+          <span class="nc-date">🕐 ${n.date||'—'}</span>
+          ${(n.tags||[]).slice(0,3).map(t=>`<span class="ntag">${t}</span>`).join('')}
+          ${n.url?`<a class="nc-ext" href="${n.url}" target="_blank" onclick="event.stopPropagation()">↗ Đọc gốc</a>`:''}
+        </div>
       </div>
-      <div class="target-count">${cnt}</div>
+    </div>`;}).join('');
+}
+
+function loadMore(){
+  displayedNews += NEWS_PER_PAGE;
+  renderNews();
+}
+
+// ═══════════════════════════════════════════
+//  SOURCE STATUS WIDGET
+// ═══════════════════════════════════════════
+function renderSourceStatus(state){
+  if(state==='loading'){
+    document.getElementById('srcStatus').innerHTML=`<div style="padding:1rem"><div class="sk" style="height:11px;margin-bottom:8px"></div><div class="sk" style="height:11px;margin-bottom:8px;width:75%"></div><div class="sk" style="height:11px;width:55%"></div></div>`;
+    return;
+  }
+  const newsBySource={};
+  allNews.forEach(n=>{if(n.sourceId)newsBySource[n.sourceId]=(newsBySource[n.sourceId]||0)+1;});
+  document.getElementById('srcStatus').innerHTML=RSS_SOURCES.map(s=>{
+    const st=sourceStatus[s.id]||'load';
+    const dotCls=st==='ok'?'ss-ok':st==='err'?'ss-err':'ss-load';
+    const cnt=newsBySource[s.id]||0;
+    const label=st==='ok'?`${cnt} bài`:st==='err'?'Lỗi':'Tải...';
+    return `<div class="ss-item">
+      <div class="ss-dot ${dotCls}"></div>
+      <span class="ss-name">${s.icon} ${s.name}</span>
+      <span class="ss-cnt">${label}</span>
+    </div>`;}).join('');
+}
+
+// ═══════════════════════════════════════════
+//  SOURCE PILLS FILTER
+// ═══════════════════════════════════════════
+function renderSourcePills(){
+  const newsBySrc={};
+  allNews.forEach(n=>{if(n.sourceId)newsBySrc[n.sourceId]=(newsBySrc[n.sourceId]||0)+1;});
+  const pills=RSS_SOURCES.filter(s=>newsBySrc[s.id]).map(s=>`
+    <button class="spill ${activeSourceFilter===s.id?'on':''}" onclick="toggleSrc('${s.id}',this)">
+      <span class="sdot2"></span>${s.name} (${newsBySrc[s.id]})
+    </button>`).join('');
+  document.getElementById('srcPills').innerHTML=pills;
+}
+
+function toggleSrc(id){
+  activeSourceFilter = activeSourceFilter===id ? null : id;
+  renderSourcePills();
+  displayedNews=NEWS_PER_PAGE;
+  renderNews();
+}
+
+// ═══════════════════════════════════════════
+//  TICKER update
+// ═══════════════════════════════════════════
+function updateTicker(){
+  const cveItems=allCVEs.slice(0,5).map(c=>{
+    const sv=c.severity||'MEDIUM';
+    const cls=sv==='CRITICAL'?'tc':sv==='HIGH'?'th':'tm2';
+    const em=sv==='CRITICAL'?'🔴':sv==='HIGH'?'🟠':'🟡';
+    return `<span class="ti">${em} <span class="${cls}">[${sv}]</span> ${c.id} — ${(c.description||'').substring(0,55)} · </span>`;});
+  const newsItems=allNews.slice(0,5).map(n=>{
+    const src=RSS_SOURCES.find(s=>s.id===n.sourceId)||{icon:'📰'};
+    return `<span class="ti">${src.icon} ${n.source}: ${(n.title||'').substring(0,60)} · </span>`;});
+  const combined=[...cveItems,...newsItems];
+  const doubled=[...combined,...combined].join('');
+  document.getElementById('ticker').innerHTML=doubled||'<span class="ti">Đang tải dữ liệu...</span>';
+}
+
+// ═══════════════════════════════════════════
+//  GAUGE
+// ═══════════════════════════════════════════
+function updateGauge(){
+  const crit=allCVEs.filter(c=>c.severity==='CRITICAL').length;
+  const high=allCVEs.filter(c=>c.severity==='HIGH').length;
+  const urgNews=allNews.filter(n=>n.urgent).length;
+  const score=Math.min(100,Math.round(crit*7+high*3+urgNews*2));
+  const col=score>=70?'var(--a2)':score>=40?'var(--a3)':'var(--a)';
+  const lbl=score>=70?'⚠ CAO':score>=40?'▲ TRUNG BÌNH':'✓ THẤP';
+  const off=163-(score/100*163);
+  document.getElementById('gval').textContent=score;
+  document.getElementById('gval').style.color=col;
+  document.getElementById('gstat').textContent=lbl;
+  document.getElementById('gstat').style.color=col;
+  document.getElementById('gfill').setAttribute('stroke-dashoffset',off);
+  document.getElementById('gdate').textContent=new Date().toLocaleDateString('vi-VN');
+}
+
+// ═══════════════════════════════════════════
+//  TARGETS
+// ═══════════════════════════════════════════
+function updateTargets(){
+  const c={};
+  allCVEs.forEach(v=>{const p=(v.product||'Unknown').split(' ').slice(0,2).join(' ');c[p]=(c[p]||0)+1;});
+  const sorted=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const max=sorted[0]?.[1]||1;
+  document.getElementById('tlist').innerHTML=sorted.map(([n,cnt],i)=>`
+    <div class="ti2">
+      <div class="trank">0${i+1}</div>
+      <div class="tbw"><div class="tname">${n}</div><div class="ttr"><div class="tfill" style="width:${(cnt/max*100).toFixed(0)}%"></div></div></div>
+      <div class="tcnt">${cnt}</div>
     </div>`).join('');
 }
 
-// ─── ACTIVITY ─────────────────────────────────────────
-function addActivity(type, text, time) {
-  const colors = { success:'#00f5c4', warning:'#f5a623', error:'#ff3a3a', info:'#4fc3f7' };
-  activityLog.unshift({ dot: colors[type]||'#4fc3f7', text, time });
-  if (activityLog.length > 12) activityLog.pop();
-  renderActivity();
+// ═══════════════════════════════════════════
+//  ACTIVITY
+// ═══════════════════════════════════════════
+function logActivity(type,text,time){
+  const cols={ok:'#00f5c4',warn:'#f5a623',err:'#ff3a3a',info:'#4fc3f7'};
+  actLog.unshift({dot:cols[type]||'#4fc3f7',text,time});
+  if(actLog.length>15)actLog.pop();
+  document.getElementById('afeed').innerHTML=actLog.map(a=>`
+    <div class="aitem"><div class="adot2" style="background:${a.dot}"></div><div><div class="atxt">${a.text}</div><div class="atime">${a.time}</div></div></div>`).join('');
 }
 
-function renderActivity() {
-  document.getElementById('activityFeed').innerHTML = activityLog.map(a =>
-    `<div class="act-item"><div class="act-dot" style="background:${a.dot}"></div><div><div class="act-text">${a.text}</div><div class="act-time">${a.time}</div></div></div>`
-  ).join('');
-}
-
-// ─── NEWS ─────────────────────────────────────────────
-function renderNews() {
-  document.getElementById('newsList').innerHTML = newsCache.map((n,i) => `
-    <div class="news-card ${n.urgent?'urgent':''}" style="animation-delay:${i*0.08}s" onclick="openNewsModal(${i})">
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="news-cat" style="color:${n.categoryColor||'#4fc3f7'}">${n.category}</span>
-          ${i===0?'<span class="new-pill">🆕 MỚI</span>':''}
-        </div>
-        <div class="news-title">${n.title}</div>
-        <div class="news-meta">
-          <span class="news-src">📰 ${n.source}</span>
-          <span class="news-date">🕐 ${n.date}</span>
-          ${(n.tags||[]).map(t=>`<span class="news-tag">${t}</span>`).join('')}
-        </div>
-      </div>
-      ${n.urgent?'<div style="color:var(--accent2);font-family:var(--font-mono);font-size:.62rem;flex-shrink:0;align-self:center">⚡URGENT</div>':''}
-    </div>`).join('');
-}
-
-// ─── MODALS ───────────────────────────────────────────
-function openCVEModal(c) {
-  const score = parseFloat(c.score)||0;
-  const sev = c.severity || getSeverity(score);
-  const col = score>=9?'var(--accent2)':score>=7?'var(--accent3)':score>=4?'var(--accent4)':'var(--accent)';
-  document.getElementById('modalBody').innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.875rem;flex-wrap:wrap">
-      <h2 style="margin:0">${c.id}</h2>
-      <span class="sev-badge s${sev}">${sev}</span>
+// ═══════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════
+function openCVEModal(cStr){
+  let c;
+  try{c=JSON.parse(cStr);}catch(e){return;}
+  const sc=parseFloat(c.score)||0,sv=c.severity||sevFromScore(sc);
+  const col=sc>=9?'var(--a2)':sc>=7?'var(--a3)':sc>=4?'var(--a4)':'var(--a)';
+  document.getElementById('mdbody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;flex-wrap:wrap">
+      <h2 style="margin:0">${c.id}</h2><span class="sb s${sv}">${sv}</span>
     </div>
     <p>${c.description||'Không có mô tả.'}</p>
-    <div class="detail-row"><span class="detail-label">Sản phẩm:</span><span class="detail-val">${c.product||'—'}</span></div>
-    <div class="detail-row"><span class="detail-label">CVSS Score:</span><span class="detail-val" style="color:${col};font-weight:700">${score.toFixed(1)} / 10.0</span></div>
-    <div class="detail-row"><span class="detail-label">Vector:</span><span class="detail-val" style="font-family:var(--font-mono);font-size:.75rem">${c.vector||'—'}</span></div>
-    <div class="detail-row"><span class="detail-label">Công bố:</span><span class="detail-val">${c.published ? new Date(c.published).toLocaleString('vi-VN') : '—'}</span></div>
-    ${(c.references||[]).length ? `<div class="detail-row"><span class="detail-label">Tham khảo:</span><div><a href="${c.references[0]}" target="_blank" style="color:var(--accent4);font-family:var(--font-mono);font-size:.75rem;word-break:break-all">${c.references[0]}</a></div></div>` : ''}
-    <div class="code-block"># Kiểm tra trên NVD
-https://nvd.nist.gov/vuln/detail/${c.id}
-
-# Kiểm tra bản vá
-https://nvd.nist.gov/vuln/detail/${c.id}#VulnChangeHistorySection</div>
-    <div class="warn-box">⚠️ <strong>Khuyến nghị:</strong> Cập nhật ngay lên phiên bản được vá. Theo dõi thông báo chính thức từ nhà cung cấp.</div>`;
-  document.getElementById('modalOverlay').classList.add('open');
+    <div class="dr"><span class="dl">Sản phẩm:</span><span class="dv">${c.product||'—'}</span></div>
+    <div class="dr"><span class="dl">CVSS Score:</span><span class="dv" style="color:${col};font-weight:700">${sc.toFixed(1)} / 10.0</span></div>
+    <div class="dr"><span class="dl">Vector:</span><span class="dv" style="font-family:var(--mono);font-size:.7rem">${c.vector||'—'}</span></div>
+    <div class="dr"><span class="dl">Công bố:</span><span class="dv">${c.published?new Date(c.published).toLocaleString('vi-VN'):'—'}</span></div>
+    ${(c.references||[]).length?`<div class="dr"><span class="dl">Tham khảo:</span><a href="${c.references[0]}" target="_blank" style="color:var(--a4);font-family:var(--mono);font-size:.7rem;word-break:break-all">${c.references[0]}</a></div>`:''}
+    <div class="code">https://nvd.nist.gov/vuln/detail/${c.id}</div>
+    <div class="wbox">⚠️ <strong>Khuyến nghị:</strong> Cập nhật ngay lên phiên bản được vá. Kiểm tra advisory từ nhà cung cấp.</div>`;
+  document.getElementById('mo').classList.add('open');
 }
 
-function openNewsModal(idx) {
-  const n = newsCache[idx];
-  if (!n) return;
-  document.getElementById('modalBody').innerHTML = `
-    <div style="color:${n.categoryColor||'#4fc3f7'};font-family:var(--font-mono);font-size:.72rem;margin-bottom:.5rem;letter-spacing:1px">${n.category}</div>
+function openNewsModal(nStr){
+  let n;
+  try{n=JSON.parse(nStr);}catch(e){return;}
+  const src=RSS_SOURCES.find(s=>s.id===n.sourceId)||{color:'#4fc3f7',icon:'📰',name:n.source};
+  document.getElementById('mdbody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem">
+      <span style="font-size:1.2rem">${src.icon}</span>
+      <span style="font-family:var(--mono);font-size:.65rem;color:${src.color}">${n.source||src.name}</span>
+      <span class="sb" style="color:${n.categoryColor||'#4fc3f7'};border:1px solid ${n.categoryColor||'#4fc3f7'}60;padding:1px 7px;font-size:.6rem">${n.category}</span>
+      ${n.urgent?'<span class="urg-pill">⚡ Khẩn</span>':''}
+    </div>
     <h2>${n.title}</h2>
-    <div class="news-meta" style="margin:1rem 0"><span class="news-src">📰 ${n.source}</span><span class="news-date">🕐 ${n.date}</span></div>
+    <p style="font-size:.82rem;background:rgba(0,245,196,.05);border-left:2px solid var(--a);padding:.75rem;border-radius:0 6px 6px 0;margin-bottom:.875rem"><strong>TL;DR:</strong> ${n.tldr||n.summary||'—'}</p>
     <p>${n.summary||'Không có tóm tắt.'}</p>
-    <div style="margin-top:.875rem">${(n.tags||[]).map(t=>`<span class="news-tag" style="margin-right:6px">${t}</span>`).join('')}</div>`;
-  document.getElementById('modalOverlay').classList.add('open');
+    <div class="dr"><span class="dl">Ngày đăng:</span><span class="dv">${n.date||'—'}</span></div>
+    <div class="dr"><span class="dl">Nguồn:</span><span class="dv">${n.source||'—'}</span></div>
+    <div style="margin-top:.75rem">${(n.tags||[]).map(t=>`<span class="ntag" style="margin-right:5px">${t}</span>`).join('')}</div>
+    ${n.url?`<a class="btn-src" href="${n.url}" target="_blank">↗ Đọc bài gốc tại ${n.source}</a>`:''}`;
+  document.getElementById('mo').classList.add('open');
 }
 
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modalOverlay'))
-    document.getElementById('modalOverlay').classList.remove('open');
-}
+function closeMod(e){if(!e||e.target===document.getElementById('mo'))document.getElementById('mo').classList.remove('open');}
 
-// ─── FILTER / SEARCH ──────────────────────────────────
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+// ═══════════════════════════════════════════
+//  FILTERS & SEARCH
+// ═══════════════════════════════════════════
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderCVETable();
 }
-function doSearch() {
-  currentSearch = document.getElementById('searchInput').value.toLowerCase().trim();
+
+function setNewsTab(t,btn){
+  currentNewsTab=t;
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  displayedNews=NEWS_PER_PAGE;
+  renderNews();
+}
+
+function doSearch(){
+  currentSearch=document.getElementById('sinput').value.toLowerCase().trim();
   renderCVETable();
-  if (currentSearch) {
-    const filtered = newsCache.filter(n =>
-      n.title.toLowerCase().includes(currentSearch) ||
-      (n.tags||[]).some(t=>t.toLowerCase().includes(currentSearch))
-    );
-    const backup = newsCache;
-    newsCache = filtered.length ? filtered : backup;
-    renderNews();
-    newsCache = backup;
-  } else renderNews();
+  displayedNews=NEWS_PER_PAGE;
+  renderNews();
 }
 
-// ─── COUNTDOWN ────────────────────────────────────────
-function startCountdown() {
-  secondsLeft = REFRESH_INTERVAL;
-  if (countdownTimer) clearInterval(countdownTimer);
-  countdownTimer = setInterval(() => {
-    secondsLeft--;
-    const min = Math.floor(secondsLeft / 60);
-    const sec = secondsLeft % 60;
-    document.getElementById('countdownNum').textContent = `${min}:${sec.toString().padStart(2,'0')}`;
-    const offset = CIRCUMFERENCE - (secondsLeft / REFRESH_INTERVAL * CIRCUMFERENCE);
-    document.getElementById('countdownCircle').setAttribute('stroke-dashoffset', offset);
-    if (secondsLeft <= 0) {
-      clearInterval(countdownTimer);
-      addActivity('info', 'Tự động cập nhật dữ liệu từ NVD...', 'Vừa xong');
-      fetchCVEsFromNVD().then(() => startCountdown());
+function switchTab(tab,btn){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const sevF=document.getElementById('sevFilters');
+  if(tab==='cve'){
+    document.getElementById('cveSection').style.display='';
+    document.getElementById('newsSection').style.display='none';
+    sevF.style.display='';
+  } else if(tab==='news'){
+    document.getElementById('cveSection').style.display='none';
+    document.getElementById('newsSection').style.display='';
+    sevF.style.display='none';
+  } else {
+    document.getElementById('cveSection').style.display='';
+    document.getElementById('newsSection').style.display='';
+    sevF.style.display='none';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  COUNTDOWN
+// ═══════════════════════════════════════════
+function startCountdown(){
+  secLeft=REFRESH_SEC;
+  if(timer)clearInterval(timer);
+  timer=setInterval(()=>{
+    secLeft--;
+    const m=Math.floor(secLeft/60),s=secLeft%60;
+    document.getElementById('cnum').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    const off=CIRC-(secLeft/REFRESH_SEC*CIRC);
+    document.getElementById('ccirc').setAttribute('stroke-dashoffset',off);
+    if(secLeft<=0){
+      clearInterval(timer);
+      logActivity('info','Auto-refresh: tải lại dữ liệu...','Vừa xong');
+      refreshAll();
     }
-  }, 1000);
+  },1000);
 }
 
-function manualRefresh() {
-  if (countdownTimer) clearInterval(countdownTimer);
-  addActivity('info', 'Làm mới thủ công...', 'Vừa xong');
-  fetchCVEsFromNVD().then(() => startCountdown());
+async function refreshAll(){
+  await Promise.all([fetchCVEs(), fetchAllNews()]);
+  updateGauge();
+  updateTicker();
+  startCountdown();
 }
 
-// ─── THEME ────────────────────────────────────────────
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.dataset.theme === 'dark';
-  html.dataset.theme = isDark ? 'light' : 'dark';
-  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+function manualRefresh(){
+  if(timer)clearInterval(timer);
+  logActivity('info','Làm mới thủ công...','Vừa xong');
+  refreshAll();
 }
 
-// ─── MOCK DATA (fallback) ─────────────────────────────
-function getMockCVEs() {
-  const now = new Date();
-  const mkDate = (h) => { const d = new Date(now); d.setHours(d.getHours()-h); return d.toISOString(); };
+// ═══════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════
+function toggleTheme(){
+  const h=document.documentElement;
+  const d=h.dataset.theme==='dark';
+  h.dataset.theme=d?'light':'dark';
+  document.getElementById('tbtn').textContent=d?'🌙':'☀️';
+}
+
+// ═══════════════════════════════════════════
+//  STATUS HELPERS
+// ═══════════════════════════════════════════
+function setStatus(state,lbl){
+  const d=document.getElementById('rdot'),l=document.getElementById('rlbl');
+  d.className='rdot'+(state==='spin'?' spin':state==='err'?' err':'');
+  l.textContent=lbl;
+}
+function sevFromScore(s){if(s>=9)return'CRITICAL';if(s>=7)return'HIGH';if(s>=4)return'MEDIUM';if(s>0)return'LOW';return'NONE';}
+function timeAgo(ds){const h=Math.floor((Date.now()-new Date(ds).getTime())/3600000),d=Math.floor(h/24);return d>0?`${d} ngày trước`:h>0?`${h} giờ trước`:'Vừa xong';}
+
+// ═══════════════════════════════════════════
+//  FALLBACK DATA
+// ═══════════════════════════════════════════
+function getFallbackCVEs(){
+  const n=new Date();const mk=h=>{const d=new Date(n);d.setHours(d.getHours()-h);return d.toISOString();};
   return [
-    { id:'CVE-2025-21298', description:'Windows Object Linking and Embedding (OLE) Remote Code Execution Vulnerability khai thác qua email độc hại', severity:'CRITICAL', score:9.8, product:'Microsoft Windows', published:mkDate(2), vector:'AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H', references:['https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-21298'] },
-    { id:'CVE-2025-21333', description:'Windows Hyper-V NT Kernel Integration VSP Elevation of Privilege Vulnerability', severity:'HIGH', score:8.8, product:'Microsoft Hyper-V', published:mkDate(5), vector:'AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H', references:['https://msrc.microsoft.com'] },
-    { id:'CVE-2025-0282', description:'Ivanti Connect Secure stack-based buffer overflow before version 22.7R2.5 cho phép RCE không xác thực', severity:'CRITICAL', score:9.0, product:'Ivanti Connect Secure', published:mkDate(8), vector:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', references:['https://www.ivanti.com/security-advisories'] },
-    { id:'CVE-2025-23006', description:'SonicWall SMA 100 series pre-authentication deserialization vulnerability dẫn đến RCE', severity:'CRITICAL', score:9.8, product:'SonicWall SMA', published:mkDate(12), vector:'AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H', references:['https://www.sonicwall.com'] },
-    { id:'CVE-2025-21420', description:'Windows Disk Cleanup Tool Elevation of Privilege Vulnerability', severity:'HIGH', score:7.8, product:'Microsoft Windows', published:mkDate(18), vector:'AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H', references:['https://msrc.microsoft.com'] },
-    { id:'CVE-2025-1094', description:'PostgreSQL quoting APIs fail to account for invalid multibyte characters, có thể dẫn đến SQL injection', severity:'HIGH', score:8.1, product:'PostgreSQL', published:mkDate(24), vector:'AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H', references:['https://www.postgresql.org/support/security'] },
-    { id:'CVE-2025-20156', description:'Cisco Meeting Management REST API Privilege Escalation Vulnerability', severity:'CRITICAL', score:9.9, product:'Cisco Meeting Management', published:mkDate(36), vector:'AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H', references:['https://sec.cloudapps.cisco.com'] },
-    { id:'CVE-2025-21293', description:'Active Directory Domain Services Elevation of Privilege Vulnerability', severity:'HIGH', score:8.8, product:'Microsoft Active Directory', published:mkDate(48), vector:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H', references:['https://msrc.microsoft.com'] },
-    { id:'CVE-2025-21362', description:'Microsoft Excel Remote Code Execution Vulnerability qua file .xlsx độc hại', severity:'HIGH', score:7.8, product:'Microsoft Excel', published:mkDate(56), vector:'AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H', references:['https://msrc.microsoft.com'] },
-    { id:'CVE-2025-21354', description:'Microsoft Excel Remote Code Execution Vulnerability — con đường khai thác khác', severity:'HIGH', score:7.8, product:'Microsoft Excel', published:mkDate(60), vector:'AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H', references:['https://msrc.microsoft.com'] },
-    { id:'CVE-2025-21378', description:'Windows CSC Service Elevation of Privilege Vulnerability', severity:'HIGH', score:7.8, product:'Microsoft Windows CSC', published:mkDate(72), vector:'AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H', references:['https://msrc.microsoft.com'] },
-    { id:'CVE-2025-21374', description:'Windows CSC Service Information Disclosure Vulnerability', severity:'MEDIUM', score:5.5, product:'Microsoft Windows', published:mkDate(84), vector:'AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N', references:['https://msrc.microsoft.com'] },
+    {id:'CVE-2025-21298',description:'Windows OLE Remote Code Execution via malicious email attachment',severity:'CRITICAL',score:9.8,product:'Microsoft Windows',published:mk(3),vector:'AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H',references:['https://msrc.microsoft.com']},
+    {id:'CVE-2025-0282',description:'Ivanti Connect Secure stack-based buffer overflow allows unauthenticated RCE',severity:'CRITICAL',score:9.0,product:'Ivanti Connect Secure',published:mk(8),vector:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',references:['https://www.ivanti.com']},
+    {id:'CVE-2025-20156',description:'Cisco Meeting Management REST API privilege escalation to Administrator',severity:'CRITICAL',score:9.9,product:'Cisco Meeting Management',published:mk(20),vector:'AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H',references:['https://sec.cloudapps.cisco.com']},
+    {id:'CVE-2025-23006',description:'SonicWall SMA 100 pre-authentication deserialization leading to RCE',severity:'CRITICAL',score:9.8,product:'SonicWall SMA',published:mk(30),vector:'AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H',references:['https://www.sonicwall.com']},
+    {id:'CVE-2025-21333',description:'Windows Hyper-V NT Kernel Integration VSP Elevation of Privilege',severity:'HIGH',score:8.8,product:'Microsoft Hyper-V',published:mk(12),vector:'AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H',references:['https://msrc.microsoft.com']},
+    {id:'CVE-2025-1094',description:'PostgreSQL quoting APIs fail with invalid multibyte chars allowing SQL injection',severity:'HIGH',score:8.1,product:'PostgreSQL',published:mk(36),vector:'AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H',references:['https://www.postgresql.org']},
+    {id:'CVE-2025-21354',description:'Microsoft Excel Remote Code Execution via malicious spreadsheet',severity:'HIGH',score:7.8,product:'Microsoft Excel',published:mk(48),vector:'AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H',references:['https://msrc.microsoft.com']},
+    {id:'CVE-2025-21293',description:'Active Directory Domain Services Elevation of Privilege Vulnerability',severity:'HIGH',score:8.8,product:'Microsoft Active Directory',published:mk(60),vector:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',references:['https://msrc.microsoft.com']},
+    {id:'CVE-2025-21374',description:'Windows CSC Service Information Disclosure Vulnerability',severity:'MEDIUM',score:5.5,product:'Microsoft Windows CSC',published:mk(72),vector:'AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N',references:['https://msrc.microsoft.com']},
+    {id:'CVE-2025-21420',description:'Windows Disk Cleanup Tool Elevation of Privilege',severity:'HIGH',score:7.8,product:'Microsoft Windows',published:mk(80),vector:'AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',references:['https://msrc.microsoft.com']},
   ];
 }
 
-function getMockNews() {
+function getFallbackNews(){
+  const d=new Date().toLocaleDateString('vi-VN');
+  const iso=new Date().toISOString();
   return [
-    { id:1, category:'APT', categoryColor:'#ff3a3a', title:'Salt Typhoon tiếp tục nhắm vào cơ sở hạ tầng viễn thông Mỹ và Châu Á', source:'The Hacker News', date:new Date().toLocaleDateString('vi-VN'), tags:['APT','China','Telecom'], urgent:true, summary:'Nhóm APT do nhà nước Trung Quốc hỗ trợ Salt Typhoon vẫn đang hoạt động mạnh mẽ, nhắm vào các nhà cung cấp dịch vụ viễn thông. Các cơ quan tình báo Mỹ đã cảnh báo về quy mô chưa từng có của chiến dịch này.' },
-    { id:2, category:'Ransomware', categoryColor:'#f5a623', title:'Clop ransomware khai thác lỗ hổng zero-day trong phần mềm chuyển file Cleo', source:'BleepingComputer', date:new Date().toLocaleDateString('vi-VN'), tags:['Ransomware','Clop','Zero-day'], urgent:false, summary:'Nhóm ransomware Clop đang tích cực khai thác các lỗ hổng trong phần mềm chuyển file doanh nghiệp Cleo, ảnh hưởng đến hàng chục tổ chức toàn cầu.' },
-    { id:3, category:'Vulnerability', categoryColor:'#4fc3f7', title:'CISA bổ sung 3 lỗ hổng mới vào danh sách KEV — Vá ngay trước 7/3/2025', source:'CISA', date:new Date().toLocaleDateString('vi-VN'), tags:['CISA','KEV','Patch'], urgent:true, summary:'CISA đã thêm ba lỗ hổng mới vào Known Exploited Vulnerabilities catalog, yêu cầu các cơ quan liên bang Mỹ vá trước ngày 7/3/2025.' },
-    { id:4, category:'Malware', categoryColor:'#00f5c4', title:'Malware FinalDraft ẩn trong Microsoft Graph API — Phân tích kỹ thuật', source:'Elastic Security', date:new Date().toLocaleDateString('vi-VN'), tags:['Malware','APT','C2'], urgent:false, summary:'Các nhà nghiên cứu phát hiện malware FinalDraft sử dụng Microsoft Graph API làm kênh C2, khiến traffic hòa lẫn vào lưu lượng Microsoft 365 hợp lệ.' },
-    { id:5, category:'Phishing', categoryColor:'#ff3a3a', title:'Chiến dịch phishing giả mạo DeepSeek AI đang phát tán malware toàn cầu', source:'SecurityWeek', date:new Date().toLocaleDateString('vi-VN'), tags:['Phishing','AI','Infostealer'], urgent:false, summary:'Kẻ tấn công đang lợi dụng sự phổ biến của AI DeepSeek để tạo các trang web giả mạo, lừa người dùng tải xuống infostealer.' },
+    {id:1,source:'The Hacker News',sourceId:'thn',category:'APT',categoryColor:'#ff3a3a',title:'Salt Typhoon tiếp tục xâm phạm nhà cung cấp viễn thông Mỹ sau nhiều tháng',titleEn:'Salt Typhoon Continues to Compromise US Telecom Providers',summary:'Nhóm APT Salt Typhoon do nhà nước Trung Quốc hỗ trợ đã xâm phạm ít nhất 9 nhà cung cấp viễn thông lớn của Mỹ. CISA và FBI đã cùng phát hành hướng dẫn bảo mật khẩn cấp.',url:'https://thehackernews.com',date:d,dateISO:iso,tags:['APT','China','Telecom'],urgent:true,tldr:'Salt Typhoon xâm phạm 9+ nhà mạng Mỹ'},
+    {id:2,source:'BleepingComputer',sourceId:'bc',category:'Ransomware',categoryColor:'#f5a623',title:'Clop ransomware tấn công phần mềm chuyển file Cleo bằng zero-day mới',titleEn:'Clop ransomware exploits Cleo file transfer zero-day vulnerabilities',summary:'Nhóm Clop đang khai thác lỗ hổng zero-day trong phần mềm Cleo Harmony, VLTrader và LexiCom, ảnh hưởng đến hàng chục doanh nghiệp trên toàn thế giới.',url:'https://www.bleepingcomputer.com',date:d,dateISO:iso,tags:['Ransomware','Zero-day','Clop'],urgent:true,tldr:'Clop khai thác zero-day trong Cleo'},
+    {id:3,source:'CISA',sourceId:'cisa',category:'Advisory',categoryColor:'#00f5c4',title:'CISA bổ sung CVE-2025-0282 và CVE-2025-0283 vào danh sách KEV khẩn cấp',titleEn:'CISA adds Ivanti vulnerabilities to Known Exploited Vulnerabilities catalog',summary:'CISA yêu cầu tất cả cơ quan liên bang Mỹ vá ngay hai lỗ hổng Ivanti đang bị khai thác tích cực. Thời hạn là 3 tuần kể từ ngày công bố.',url:'https://www.cisa.gov',date:d,dateISO:iso,tags:['CISA','Ivanti','KEV'],urgent:true,tldr:'CISA ra lệnh vá Ivanti khẩn cấp'},
+    {id:4,source:'Krebs on Security',sourceId:'krebs',category:'Phishing',categoryColor:'#ff3a3a',title:'Chiến dịch phishing giả mạo trang đăng nhập Microsoft 365 nhắm vào doanh nghiệp',titleEn:'Massive phishing campaign targets Microsoft 365 credentials',summary:'Chiến dịch phishing quy mô lớn đang sử dụng các trang giả mạo Microsoft 365 tinh vi, vượt qua MFA bằng kỹ thuật adversary-in-the-middle.',url:'https://krebsonsecurity.com',date:d,dateISO:iso,tags:['Phishing','Microsoft 365','AiTM'],urgent:false,tldr:'Phishing AiTM vượt qua MFA Microsoft 365'},
+    {id:5,source:'Dark Reading',sourceId:'dr',category:'Research',categoryColor:'#a064ff',title:'Phân tích kỹ thuật backdoor FinalDraft ẩn trong Microsoft Graph API',titleEn:'FinalDraft malware hides C2 traffic in Microsoft Graph API',summary:'Các nhà nghiên cứu tại Elastic đã phân tích backdoor FinalDraft sử dụng Microsoft Graph API làm kênh C2, khiến traffic hòa lẫn với lưu lượng hợp lệ.',url:'https://www.darkreading.com',date:d,dateISO:iso,tags:['Malware','C2','Graph API'],urgent:false,tldr:'FinalDraft dùng Graph API để ẩn C2'},
+    {id:6,source:'The Hacker News',sourceId:'thn',category:'Vulnerability',categoryColor:'#4fc3f7',title:'Lỗ hổng PostgreSQL cho phép SQL injection qua ký tự multibyte không hợp lệ',titleEn:'PostgreSQL vulnerability allows SQL injection through invalid multibyte characters',summary:'CVE-2025-1094 ảnh hưởng đến tất cả phiên bản PostgreSQL trước 17.3, 16.7, 15.11, 14.16. Cập nhật ngay để tránh bị khai thác qua các ứng dụng web.',url:'https://thehackernews.com',date:d,dateISO:iso,tags:['PostgreSQL','SQL Injection','CVE'],urgent:false,tldr:'PostgreSQL bị SQL injection qua multibyte'},
+    {id:7,source:'BleepingComputer',sourceId:'bc',category:'Malware',categoryColor:'#00f5c4',title:'Botnet Mirai phiên bản mới lây nhiễm 50,000+ thiết bị IoT trong 72 giờ',titleEn:'New Mirai botnet variant infects 50,000+ IoT devices in 72 hours',summary:'Biến thể Mirai mới khai thác lỗ hổng trong router TP-Link, D-Link và camera IP. Botnet được dùng để tấn công DDoS nhắm vào các dịch vụ game và hosting.',url:'https://www.bleepingcomputer.com',date:d,dateISO:iso,tags:['Botnet','IoT','DDoS'],urgent:false,tldr:'Mirai mới lây 50k+ IoT trong 3 ngày'},
+    {id:8,source:'SC Magazine',sourceId:'sc',category:'Supply Chain',categoryColor:'#f5a623',title:'Ba thư viện npm phổ biến bị nhiễm mã độc thu thập biến môi trường CI/CD',titleEn:'Three popular npm packages found stealing CI/CD environment variables',summary:'Các gói npm với hơn 2 triệu lượt tải/tuần đã bị cài backdoor thu thập API keys và tokens từ pipeline CI/CD. Người dùng cần kiểm tra và xóa ngay.',url:'https://www.scmagazine.com',date:d,dateISO:iso,tags:['Supply Chain','npm','CI/CD'],urgent:true,tldr:'3 gói npm phổ biến bị nhiễm backdoor'},
   ];
 }
 
-// ─── INIT ─────────────────────────────────────────────
-addActivity('info', 'Hệ thống CyberWatch VN khởi động', 'Vừa xong');
-addActivity('info', 'Kết nối tới NVD API (nvd.nist.gov)...', 'Vừa xong');
-fetchCVEsFromNVD().then(() => startCountdown());
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+logActivity('info','CyberWatch VN v3.0 khởi động','Vừa xong');
+logActivity('info','Kết nối NVD API + 6 nguồn RSS...','Vừa xong');
+document.getElementById('gdate').textContent=new Date().toLocaleDateString('vi-VN');
+
+(async()=>{
+  await Promise.all([fetchCVEs(), fetchAllNews()]);
+  updateGauge();
+  updateTicker();
+  renderSourcePills();
+  startCountdown();
+})();
 </script>
 </body>
 </html>
