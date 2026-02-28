@@ -404,9 +404,9 @@ footer{max-width:1500px;margin:2rem auto 0;padding:1rem 1.5rem;border-top:1px so
 <div class="mo" id="mo" onclick="closeMod(event)"><div class="md"><button class="mc" onclick="closeMod()">✕</button><div id="mdbody"></div></div></div>
 
 <script>
-// ═══════════════════════════════════════════
+
 //  CONFIG & STATE
-// ═══════════════════════════════════════════
+
 const REFRESH_SEC = 300; // 5 phút
 const CIRC = 62.8;
 const NEWS_PER_PAGE = 8;
@@ -433,9 +433,8 @@ let secLeft = REFRESH_SEC;
 let timer = null;
 let currentTab = 'dashboard';
 
-// ═══════════════════════════════════════════
-//  FETCH CVEs via Claude AI + NVD
-// ═══════════════════════════════════════════
+//CVE
+
 async function fetchCVEs() {
   setStatus('spin','Tải CVE từ NVD...');
   try {
@@ -475,9 +474,8 @@ Parse the JSON response and return ONLY a raw JSON array (no markdown fences, no
   document.getElementById('stCrit').textContent = allCVEs.filter(c=>c.severity==='CRITICAL').length;
 }
 
-// ═══════════════════════════════════════════
 //  FETCH NEWS via Claude AI + RSS Web Search
-// ═══════════════════════════════════════════
+
 async function fetchAllNews() {
   setStatus('spin','Tải tin tức từ RSS...');
   logActivity('info','Kết nối tới các nguồn RSS...','Vừa xong');
@@ -556,9 +554,8 @@ Return ONLY the JSON array.`}]})});
   setStatus('ok',`Xong lúc ${new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}`);
 }
 
-// ═══════════════════════════════════════════
 //  RENDER CVE
-// ═══════════════════════════════════════════
+
 function renderCVETable(){
   let data = allCVEs;
   if(currentFilter!=='ALL') data=data.filter(c=>c.severity===currentFilter);
@@ -587,9 +584,8 @@ function renderCVETable(){
   document.getElementById('cveContent').innerHTML=`<table><thead><tr><th>CVE ID</th><th>Mô tả</th><th>Mức độ</th><th>CVSS</th><th>Sản phẩm</th><th>Thời gian</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-// ═══════════════════════════════════════════
 //  RENDER NEWS
-// ═══════════════════════════════════════════
+
 function renderNews(){
   let data = allNews;
   if(currentNewsTab!=='all') data=data.filter(n=>(n.category||'').toLowerCase()===currentNewsTab.toLowerCase());
@@ -637,9 +633,8 @@ function loadMore(){
   renderNews();
 }
 
-// ═══════════════════════════════════════════
 //  SOURCE STATUS WIDGET
-// ═══════════════════════════════════════════
+
 function renderSourceStatus(state){
   if(state==='loading'){
     document.getElementById('srcStatus').innerHTML=`<div style="padding:1rem"><div class="sk" style="height:11px;margin-bottom:8px"></div><div class="sk" style="height:11px;margin-bottom:8px;width:75%"></div><div class="sk" style="height:11px;width:55%"></div></div>`;
@@ -659,9 +654,8 @@ function renderSourceStatus(state){
     </div>`;}).join('');
 }
 
-// ═══════════════════════════════════════════
 //  SOURCE PILLS FILTER
-// ═══════════════════════════════════════════
+
 function renderSourcePills(){
   const newsBySrc={};
   allNews.forEach(n=>{if(n.sourceId)newsBySrc[n.sourceId]=(newsBySrc[n.sourceId]||0)+1;});
@@ -679,9 +673,8 @@ function toggleSrc(id){
   renderNews();
 }
 
-// ═══════════════════════════════════════════
 //  TICKER update
-// ═══════════════════════════════════════════
+
 function updateTicker(){
   const cveItems=allCVEs.slice(0,5).map(c=>{
     const sv=c.severity||'MEDIUM';
@@ -696,9 +689,8 @@ function updateTicker(){
   document.getElementById('ticker').innerHTML=doubled||'<span class="ti">Đang tải dữ liệu...</span>';
 }
 
-// ═══════════════════════════════════════════
 //  GAUGE
-// ═══════════════════════════════════════════
+
 function updateGauge(){
   const crit=allCVEs.filter(c=>c.severity==='CRITICAL').length;
   const high=allCVEs.filter(c=>c.severity==='HIGH').length;
@@ -715,9 +707,9 @@ function updateGauge(){
   document.getElementById('gdate').textContent=new Date().toLocaleDateString('vi-VN');
 }
 
-// ═══════════════════════════════════════════
+
 //  TARGETS
-// ═══════════════════════════════════════════
+
 function updateTargets(){
   const c={};
   allCVEs.forEach(v=>{const p=(v.product||'Unknown').split(' ').slice(0,2).join(' ');c[p]=(c[p]||0)+1;});
@@ -731,9 +723,8 @@ function updateTargets(){
     </div>`).join('');
 }
 
-// ═══════════════════════════════════════════
 //  ACTIVITY
-// ═══════════════════════════════════════════
+
 function logActivity(type,text,time){
   const cols={ok:'#00f5c4',warn:'#f5a623',err:'#ff3a3a',info:'#4fc3f7'};
   actLog.unshift({dot:cols[type]||'#4fc3f7',text,time});
@@ -742,9 +733,8 @@ function logActivity(type,text,time){
     <div class="aitem"><div class="adot2" style="background:${a.dot}"></div><div><div class="atxt">${a.text}</div><div class="atime">${a.time}</div></div></div>`).join('');
 }
 
-// ═══════════════════════════════════════════
 //  MODALS
-// ═══════════════════════════════════════════
+
 function openCVEModal(cStr){
   let c;
   try{c=JSON.parse(cStr);}catch(e){return;}
@@ -788,9 +778,8 @@ function openNewsModal(nStr){
 
 function closeMod(e){if(!e||e.target===document.getElementById('mo'))document.getElementById('mo').classList.remove('open');}
 
-// ═══════════════════════════════════════════
 //  FILTERS & SEARCH
-// ═══════════════════════════════════════════
+
 function setFilter(f,btn){
   currentFilter=f;
   document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
@@ -833,9 +822,8 @@ function switchTab(tab,btn){
   }
 }
 
-// ═══════════════════════════════════════════
 //  COUNTDOWN
-// ═══════════════════════════════════════════
+
 function startCountdown(){
   secLeft=REFRESH_SEC;
   if(timer)clearInterval(timer);
@@ -866,9 +854,8 @@ function manualRefresh(){
   refreshAll();
 }
 
-// ═══════════════════════════════════════════
 //  THEME
-// ═══════════════════════════════════════════
+
 function toggleTheme(){
   const h=document.documentElement;
   const d=h.dataset.theme==='dark';
@@ -876,9 +863,9 @@ function toggleTheme(){
   document.getElementById('tbtn').textContent=d?'🌙':'☀️';
 }
 
-// ═══════════════════════════════════════════
+
 //  STATUS HELPERS
-// ═══════════════════════════════════════════
+
 function setStatus(state,lbl){
   const d=document.getElementById('rdot'),l=document.getElementById('rlbl');
   d.className='rdot'+(state==='spin'?' spin':state==='err'?' err':'');
@@ -887,9 +874,9 @@ function setStatus(state,lbl){
 function sevFromScore(s){if(s>=9)return'CRITICAL';if(s>=7)return'HIGH';if(s>=4)return'MEDIUM';if(s>0)return'LOW';return'NONE';}
 function timeAgo(ds){const h=Math.floor((Date.now()-new Date(ds).getTime())/3600000),d=Math.floor(h/24);return d>0?`${d} ngày trước`:h>0?`${h} giờ trước`:'Vừa xong';}
 
-// ═══════════════════════════════════════════
+
 //  FALLBACK DATA
-// ═══════════════════════════════════════════
+
 function getFallbackCVEs(){
   const n=new Date();const mk=h=>{const d=new Date(n);d.setHours(d.getHours()-h);return d.toISOString();};
   return [
@@ -921,9 +908,9 @@ function getFallbackNews(){
   ];
 }
 
-// ═══════════════════════════════════════════
+
 //  INIT
-// ═══════════════════════════════════════════
+
 logActivity('info','CyberWatch VN v3.0 khởi động','Vừa xong');
 logActivity('info','Kết nối NVD API + 6 nguồn RSS...','Vừa xong');
 document.getElementById('gdate').textContent=new Date().toLocaleDateString('vi-VN');
